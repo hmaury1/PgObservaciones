@@ -1,8 +1,50 @@
 angular.module('starter.services', [])
 
-.factory('Chats', function($q, $cordovaSQLite) {
-	// Might use a resource here that returns a JSON array
+.factory('DBA', function($cordovaSQLite, $q, $ionicPlatform) {
 
+
+	function query(query, parameters) {
+		parameters = parameters || [];
+		var q = $q.defer();
+
+		$cordovaSQLite.execute(db, query, parameters)
+			.then(function(result) {
+				q.resolve(result);
+			}, function(error) {
+				console.warn('I found an error');
+				console.warn(error);
+				q.reject(error);
+			});
+
+		return q.promise;
+	}
+
+	// Proces a result set
+	function getAll(result) {
+		var output = [];
+
+		for (var i = 0; i < result.rows.length; i++) {
+			output.push(result.rows.item(i));
+		}
+		return output;
+	}
+
+	// Proces a single result
+	function getById(result) {
+		var output = null;
+		output = angular.copy(result.rows.item(0));
+		return output;
+	}
+
+	return {
+		query: query,
+		getAll: getAll,
+		getById: getById
+	};
+
+})
+
+.factory('Chats', function($q, $cordovaSQLite) {
 
 	return {
 		all: function() {
