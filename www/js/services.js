@@ -1,4 +1,4 @@
-angular.module('starter.services', [])
+angular.module('app.services', [])
 
 .factory('DBA', function($cordovaSQLite, $q, $ionicPlatform) {
 
