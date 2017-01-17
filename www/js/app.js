@@ -5,8 +5,11 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
+/**
+ * Isntancia global de sqlite
+ * @type {SQLITE}
+ */
 var db = null;
-
 
 angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter.services'])
 
@@ -25,17 +28,27 @@ angular.module('starter', ['ionic', 'ngCordova', 'starter.controllers', 'starter
 			StatusBar.styleDefault();
 		}
 
+		/**
+		 * Verifico si la extension de cordova esta activa en el dispsitivo, sino
+		 * instancio la del web browser o la de Ionic serve
+		 */
 		if (window.cordova) {
-			// App syntax
+			// Dispositivo
 			db = $cordovaSQLite.openDB("my.db");
 		} else {
-			// Ionic serve syntax
+			// Ionic serve
 			db = window.openDatabase("my.db", "1.0", "My app", -1);
 		}
 
-		//db = $cordovaSQLite.openDB({ name: "my.db" });
-		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS people (id integer primary key, name text, lasttext text)");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS people (id integer primary key, name text, lasttext text)"); //tabla de ejemplo se elminara despues
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Empresas (IdEmpresa integer primary key, RazonSocial text, IdTipoEmpresa text, IdEstadoEmpresa text)");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Dependencias(IdDependencia integer primary key,NombreDependencia text,IdEstadoDependencia text,IdEmpresa integer,FOREIGN KEY(IdEmpresa) REFERENCES Empresas(IdEmpresa))");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Lideres(IdLider integer primary key,IdEmpresa integer,IdDependencia integer,IdUsuario integer,Nombre text,IdEstadoLider text,Usuario text,FOREIGN KEY(IdDependencia) REFERENCES Dependencias(IdDependencia),FOREIGN KEY(IdEmpresa) REFERENCES Empresas(IdEmpresa))");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Estandares(IdEstandar integer primary key,Descripcion text,IdTipoEstandar text,IdEstadoEstandar text)");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Observaciones(IdObservacion integer primary key,IdLider integer,Fecha datetime,Lugar text,IdEstadoObservacion text,IdEmpresa integer,IdObservRemoto text,PrefijoRemoto text,NombreUsuario text,IdEmpresaContratante integer,FOREIGN KEY(IdEmpresa) REFERENCES Empresas(IdEmpresa),FOREIGN KEY(IdEmpresaContratante) REFERENCES Empresas(IdEmpresa),FOREIGN KEY(IdLider) REFERENCES Lideres(IdLider))");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS DetObservaciones(IdDetObservacion integer primary key,IdObservacion integer,IdEstandar integer,NumCompPositivos integer,NumCompObservados integer,Acciones text,IdEstadoDetObservacion text,IdDetObservRemoto text,PrefijoRemoto text,FOREIGN KEY(IdEstandar) REFERENCES Estandares(IdEstandar),FOREIGN KEY(IdObservacion) REFERENCES Observaciones(IdObservacion))");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Parametros(IdParametro integer primary key,CodParametro text,Atributo text,Descripcion text,EstadoParametro text)");
+		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS ValorParametros(IdValorParametro integer primary key,IdParametro integer,CodValorParametro text,CodParametro text,Valor text,Orden text,EstadoValorParametro text,FOREIGN KEY(IdParametro) REFERENCES Parametros(IdParametro))");
 
 	});
 })
