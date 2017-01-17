@@ -14,14 +14,15 @@ $assertive:                       #ef473a !default;
 $royal:                           #886aea !default;
 $dark:                            #444 !default;
 */
-$SIDEMENU_TOP: $balanced;
-$SIDEMENU_BOTTOM: #ABD9B8;
+$SIDEMENU_TOP: #387ef5;
+$SIDEMENU_BOTTOM: #11c1f3;
 $SIDEMENU_TRANSPARENCY: rgba(255,255,255,0.4);
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
+
 .side-menu-item {
 	background: none;
 	color: white;

@@ -1,62 +1,78 @@
 angular.module('app.routes', [])
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $httpProvider, $urlRouterProvider) {
 
-	// Ionic uses AngularUI Router which uses the concept of states
-	// Learn more here: https://github.com/angular-ui/ui-router
-	// Set up the various states which the app can be in.
-	// Each state's controller can be found in controllers.js
-	$stateProvider
-
-	// setup an abstract state for the tabs directive
-		.state('tab', {
-		url: '/tab',
-		abstract: true,
-		templateUrl: 'templates/tabs.html'
-	})
-
-	// Each tab has its own nav history stack:
-
-	.state('tab.dash', {
-		url: '/dash',
-		views: {
-			'tab-dash': {
-				templateUrl: 'templates/tab-dash.html',
-				controller: 'DashCtrl'
-			}
-		}
-	})
-
-	.state('tab.chats', {
-			url: '/chats',
-			views: {
-				'tab-chats': {
-					templateUrl: 'templates/tab-chats.html',
-					controller: 'ChatsCtrl'
-				}
-			}
-		})
-		.state('tab.chat-detail', {
-			url: '/chats/:chatId',
-			views: {
-				'tab-chats': {
-					templateUrl: 'templates/chat-detail.html',
-					controller: 'ChatDetailCtrl'
-				}
-			}
-		})
-
-	.state('tab.account', {
-		url: '/account',
-		views: {
-			'tab-account': {
-				templateUrl: 'templates/tab-account.html',
-				controller: 'AccountCtrl'
+	$httpProvider.interceptors.push(function($rootScope, $q) {
+		return {
+			request: function(config) {
+				$rootScope.$broadcast('loading:show');
+				return config
+			},
+			response: function(response) {
+				$rootScope.$broadcast('loading:hide');
+				return response
+			},
+			responseError: function(rejection) {
+				$rootScope.$broadcast('loading:hide');
+				return $q.reject(rejection);
 			}
 		}
 	});
 
-	// if none of the above states are matched, use this as the fallback
-	$urlRouterProvider.otherwise('/tab/dash');
+	$stateProvider
+
+		.state('menu', {
+		url: '/side-content',
+		templateUrl: 'templates/menu.html',
+		controller: 'MenuCtrl'
+	})
+
+	.state('menu.crearobservacion', {
+		url: '/crearobservacion',
+		views: {
+			'side-content': {
+				templateUrl: 'templates/crear-observacion.html',
+				controller: 'CrearObservacionCtrl'
+			}
+		}
+	})
+
+	.state('menu.obspendientes', {
+		url: '/obspendientes',
+		views: {
+			'side-content': {
+				templateUrl: 'templates/obs-pendientes.html',
+				controller: 'ObsPendientesCtrl'
+			}
+		}
+	})
+
+	.state('menu.obsporenviar', {
+		url: '/obsporenviar',
+		views: {
+			'side-content': {
+				templateUrl: 'templates/obs-porenviar.html',
+				controller: 'ObsPorEnviarCtrl'
+			}
+		}
+	})
+
+	.state('menu.parametros', {
+		url: '/parametros',
+		views: {
+			'side-content': {
+				templateUrl: 'templates/parametros.html',
+				controller: 'ParametrosCtrl'
+			}
+		}
+	})
+
+	.state('login', {
+		url: '/login',
+		templateUrl: 'templates/login.html',
+		controller: 'LoginCtrl'
+	})
+
+	$urlRouterProvider.otherwise('/side-content/crearobservacion')
 
 });

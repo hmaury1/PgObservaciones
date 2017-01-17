@@ -6,25 +6,24 @@
         <button class="button button-icon button-clear ion-navicon" menu-toggle="left"></button>
       </ion-nav-buttons>
     </ion-nav-bar>
-    <ion-nav-view name="side-menu21"></ion-nav-view>
+    <ion-nav-view name="side-content"></ion-nav-view>
   </ion-side-menu-content>
-  <ion-side-menu side="left" id="side-menu21">
+  <ion-side-menu side="left" id="side-content">
     <ion-content padding="true" style="top:0px !important;" class="side-menu-left side-menu-gradient">
-      <div class="spacer" style="width: 251px; height: 48px;"></div>
-      <div class="profile-image">
-        <img src="img/Ux9mMoUJQXCJdsS2DSIy_yo.jpg" style="display: block; width: 40%; height: auto; margin-left: auto; margin-right: auto;">
-      </div>
-      <h3 id="menu-heading1" style="color:#FFFFFF;font-weight:300;text-align:center;">Heading</h3>
+      <h3 id="menu-heading1" style="color:#FFFFFF;font-weight:300;text-align:center;">Bienvenido</h3>
+      <h2 style="color:#FFFFFF;font-weight:300;text-align:center;">Humberto Maury</h2>
       <div class="spacer" style="width: 251px; height: 24px;"></div>
       <ion-list id="menu-list3" class="manual-list-fullwidth">
-        <ion-item class="item-icon-left  side-menu-item" id="menu-list-item1" ui-sref="menu.home" menu-close="">
-          <i class="icon ion-ios-person-outline"></i>My Profile</ion-item>
-        <ion-item class="item-icon-left  side-menu-item" id="menu-list-item2" ui-sref="menu.cart" menu-close="">
-          <i class="icon ion-ios-camera-outline"></i>My Photos</ion-item>
-        <ion-item class="item-icon-left  side-menu-item" id="menu-list-item3" ui-sref="menu.cloud" menu-close="">
-          <i class="icon ion-ios-heart-outline"></i>My Favorites</ion-item>
+        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="menu.crearobservacion" menu-close="">
+          <i class="icon ion-ios-person-outline"></i>Crear Observación</ion-item>
+        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="menu.obspendientes" menu-close="">
+          <i class="icon ion-ios-camera-outline"></i>Obser. Pendientes</ion-item>
+        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="menu.obsporenviar" menu-close="">
+          <i class="icon ion-ios-heart-outline"></i>Obser. por Enviar</ion-item>
+        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="login" menu-close="">
+          <i class="icon ion-ios-heart-outline"></i>Login</ion-item>
       </ion-list>
-      <button id="menu-button5" class="button button-positive  button-block">Logout</button>
+      <button id="menu-button5" class="button button-light  button-block">Cerrar Sessión</button>
     </ion-content>
   </ion-side-menu>
 </ion-side-menus>

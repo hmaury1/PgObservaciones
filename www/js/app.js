@@ -11,10 +11,24 @@
  */
 var db = null;
 
-angular.module('app', ['ionic', 'ngCordova', 'app.controllers', 'app.services'])
+angular.module('app', ['ionic', 'ngCordova', 'app.controllers', 'app.routes', 'app.directives', 'app.services'])
 
+.value('BASE_URL', {
+	url: 'http://localhost:50520/'
+})
 
-.run(function($ionicPlatform, $cordovaSQLite) {
+.run(function($rootScope, $ionicPlatform, $ionicLoading, $ionicPopup, $cordovaSQLite) {
+
+	$rootScope.$on('loading:show', function() {
+		$ionicLoading.show({
+			template: '<ion-spinner icon="android"></ion-spinner><div>Cargando</div>'
+		});
+	});
+
+	$rootScope.$on('loading:hide', function() {
+		$ionicLoading.hide();
+	});
+
 	$ionicPlatform.ready(function() {
 		// Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
 		// for form inputs)
