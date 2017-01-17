@@ -1,6 +1,32 @@
 <ion-view view-title="Crear Observación">
   <ion-content has-header="true" padding="true">
-    <h2>Crear Observación</h2>
-
+	<form name="formGuardar" ng-submit="continuar()">
+		<div class="list">
+		 	<label class="item item-input">
+		         	<span class="input-label">Empresa</span>
+		          	<select ng-options="empresa as empresa.RazonSocial for empresa in empresas track by empresa.IdEmpresa"
+	                  ng-model="data.empresa">
+	          		</select>
+	        </label>
+	        <label class="item item-input">
+		         	<span class="input-label">Empresa Contratante</span>
+		          	<select ng-options="empresa as empresa.RazonSocial for empresa in empresascontra track by empresa.IdEmpresa"
+	                  ng-model="data.empresascontra">
+	          		</select>
+	        </label>
+	        <label class="item item-input">
+		         	<span class="input-label">Fecha</span>
+		          	<input type="text" ng-model="data.fecha" ng-value="{{data.fecha | date:'longDate'}}" ng-click="openDatePicker()" required>
+	        </label>
+	        <label class="item item-input">
+		         	<span class="input-label">Lugar</span>
+		          	<input type="text" ng-model="data.lugar" required>
+	        </label>
+	    </div>
+	    <div class="row">
+	    	<div class="col"><button class="button button-block button-positive" >Cancelar</button></div>
+			<div class="col"><button class="button button-block button-positive" type="submit"  ng-disabled="formGuardar.$invalid">Continuar</button></div>
+		</div>
+	</form>
   </ion-content>
 </ion-view>

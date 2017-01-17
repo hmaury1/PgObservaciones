@@ -1,6 +1,6 @@
 angular.module('app.routes', [])
 
-.config(function($stateProvider, $httpProvider, $urlRouterProvider) {
+.config(function($stateProvider, $httpProvider, $urlRouterProvider, ionicDatePickerProvider) {
 
 	$httpProvider.interceptors.push(function($rootScope, $q) {
 		return {
@@ -19,6 +19,24 @@ angular.module('app.routes', [])
 		}
 	});
 
+	var datePickerObj = {
+		inputDate: new Date(),
+		setLabel: 'Elegir',
+		todayLabel: 'Hoy',
+		closeLabel: 'Cerrar',
+		mondayFirst: false,
+		weeksList: ["D", "L", "M", "M", "J", "V", "S"],
+		monthsList: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+		templateType: 'popup',
+		//from: new Date(2017, 1, 1),
+		//to: new Date(2020, 8, 1),
+		showTodayButton: true,
+		dateFormat: 'yyyy-MM-dd',
+		closeOnSelect: true,
+		disableWeekdays: [6],
+	};
+	ionicDatePickerProvider.configDatePicker(datePickerObj);
+
 	$stateProvider
 
 		.state('menu', {
@@ -33,6 +51,16 @@ angular.module('app.routes', [])
 			'side-content': {
 				templateUrl: 'templates/crear-observacion.html',
 				controller: 'CrearObservacionCtrl'
+			}
+		}
+	})
+
+	.state('menu.det-observacion', {
+		url: '/det-observacion/{id_observacion}',
+		views: {
+			'side-content': {
+				templateUrl: 'templates/det-observacion.html',
+				controller: 'DetalleObservacionCtrl'
 			}
 		}
 	})

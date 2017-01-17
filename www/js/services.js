@@ -11,7 +11,6 @@ angular.module('app.services', [])
 			.then(function(result) {
 				q.resolve(result);
 			}, function(error) {
-				console.warn('I found an error');
 				console.warn(error);
 				q.reject(error);
 			});
@@ -88,4 +87,58 @@ angular.module('app.services', [])
 			});
 		}
 	};
-});
+})
+
+.factory('Empresas', function($q, DBA) {
+
+	function getAll() {
+		return DBA.query("SELECT IdEmpresa,RazonSocial FROM Empresas")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
+	function get(key) {
+		var parameters = [key];
+		return DBA.query("SELECT IdEmpresa,RazonSocial FROM Empresas WHERE IdEmpresa = (?)", parameters)
+			.then(function(result) {
+				return DBA.getById(result);
+			});
+	}
+
+	function add(obj) {
+		var parameters = [obj.key, obj.name];
+		return DBA.query("INSERT INTO Empresas (key , value) VALUES (?,?)", parameters);
+	}
+
+	return {
+		getAll: getAll,
+		get: get
+	};
+
+})
+
+.factory('Observaciones', function($q, DBA) {
+	//[IdObservacion] [int] IDENTITY(1,1) NOT NULL,
+	//[IdLider] [int] NULL,
+	//[Fecha] [datetime] NULL,
+	//[Lugar] [varchar](200) NULL,
+	//[IdEstadoObservacion] [varchar](10) NULL,
+	//[IdEmpresa] [int] NULL,
+	//[IdObservRemoto] [varchar](10) NULL,
+	//[PrefijoRemoto] [varchar](50) NULL,
+	//[NombreUsuario] [varchar](50) NULL,
+	//[IdEmpresaContratante] [int] NULL,
+
+	function add(obj) {
+		var parameters = [obj.IdLider, obj.Fecha, obj.Lugar, obj.IdEstadoObservacion, obj.IdEmpresa, obj.IdObservRemoto, obj.PrefijoRemoto, obj.NombreUsuario, obj.IdEmpresaContratante];
+		return DBA.query("INSERT INTO Observaciones (IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", parameters);
+	}
+
+	return {
+		add: add
+	}
+})
+
+
+;

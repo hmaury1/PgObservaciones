@@ -11,7 +11,7 @@
  */
 var db = null;
 
-angular.module('app', ['ionic', 'ngCordova', 'app.controllers', 'app.routes', 'app.directives', 'app.services'])
+angular.module('app', ['ionic', 'ngCordova', 'ionic-datepicker', 'app.controllers', 'app.routes', 'app.directives', 'app.services'])
 
 .value('BASE_URL', {
 	url: 'http://localhost:50520/'
