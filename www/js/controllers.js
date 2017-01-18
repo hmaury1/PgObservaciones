@@ -61,7 +61,7 @@ angular.module('app.controllers', [])
 
 })
 
-.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones, Estandares) {
+.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones, Estandares, DetObservaciones) {
 
 	$scope.data = {
 		empresaselected: null,
@@ -127,9 +127,25 @@ angular.module('app.controllers', [])
 				fecha: '',
 				lugar: ''
 			};
-			$state.go('menu.det-observacion', {
-				id_observacion: result.insertId
+
+			Estandares.getAll().then(function(data) {
+				for (var i = 0; i < data.length; i++) {
+					DetObservaciones.add({
+						IdObservacion: result.insertId,
+						IdEstandar: data[i].IdEstandar,
+						NumCompPositivos: 0,
+						NumCompObservados: 0,
+						Acciones: '',
+						IdEstadoDetObservacion: 0,
+						IdDetObservRemoto: 0,
+						PrefijoRemoto: 0
+					});
+				}
+				$state.go('menu.det-observacion', {
+					id_observacion: result.insertId
+				});
 			});
+
 		})
 	};
 
@@ -138,6 +154,11 @@ angular.module('app.controllers', [])
 
 .controller('DetalleObservacionCtrl', function($scope, $stateParams, Empresas) {
 	var id_observacion = $stateParams.id_observacion;
+	$scope.data = {
+		acciones: '',
+		ncp: 0,
+		nco: 0
+	};
 
 	function init() {
 
@@ -245,7 +266,7 @@ angular.module('app.controllers', [])
 			var conn = $cordovaNetwork.getNetwork();
 			if (conn == Connection.NONE) {
 				$ionicPopup.alert({
-					title: "Internet Disconnected",
+					title: "Internet sin conexion",
 					content: "El Dispositivo no tiene señal. Para continuar por favor conectese a una señaol WIFI o Datos Moviles"
 				});
 				$scope.enableSync = true;

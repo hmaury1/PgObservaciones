@@ -181,8 +181,23 @@ angular.module('app.services', [])
 			});
 	}
 
+	function add(obj) {
+		var parameters = [
+			obj.IdObservacion,
+			obj.IdEstandar,
+			obj.NumCompPositivos,
+			obj.NumCompObservados,
+			obj.Acciones,
+			obj.IdEstadoDetObservacion,
+			obj.IdDetObservRemoto,
+			obj.PrefijoRemoto
+		];
+		return DBA.query("INSERT INTO DetObservaciones (IdObservacion,IdEstandar,NumCompPositivos,NumCompObservados,Acciones,IdEstadoDetObservacion,IdDetObservRemoto,PrefijoRemoto) VALUES (?,?,?,?,?,?,?,?)", parameters);
+	}
+
 	return {
-		getAll: getAll
+		getAll: getAll,
+		add: add
 	}
 })
 
