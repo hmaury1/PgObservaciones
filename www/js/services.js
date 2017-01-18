@@ -200,6 +200,60 @@ angular.module('app.services', [])
 	}
 })
 
+.factory('Parametros', function($q, DBA) {
+
+	function getAll() {
+		return DBA.query("SELECT IdParametro,CodParametro,Atributo,Descripcion,EstadoParametro FROM Parametros")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
+	function add(obj) {
+		var parameters = [obj.IdParametro, obj.CodParametro, obj.Atributo, obj.Descripcion, obj.EstadoParametro];
+		return DBA.query("INSERT INTO Parametros (IdParametro,CodParametro,Atributo,Descripcion,EstadoParametro) VALUES (?,?,?,?,?)", parameters);
+	}
+
+	function truncate() {
+		return DBA.query("DELETE FROM Parametros");
+	}
+
+	return {
+		getAll: getAll,
+		add: add,
+		truncate: truncate
+	}
+})
+
+.factory('ValorParametros', function($q, DBA) {
+
+	function getAll() {
+		return DBA.query("SELECT IdValorParametro,IdParametro,CodValorParametro,CodParametro,Valor,Orden,EstadoValorParametro FROM ValorParametros")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
+	function add(obj) {
+		var parameters = [obj.IdValorParametro, obj.IdParametro, obj.CodValorParametro, obj.CodParametro, obj.Valor, obj.Orden, obj.EstadoValorParametro];
+		return DBA.query("INSERT INTO ValorParametros (IdValorParametro,IdParametro,CodValorParametro,CodParametro,Valor,Orden,EstadoValorParametro) VALUES (?,?,?,?,?,?,?)", parameters);
+	}
+
+	function truncate() {
+		return DBA.query("DELETE FROM ValorParametros");
+	}
+
+	return {
+		getAll: getAll,
+		add: add,
+		truncate: truncate
+	}
+})
+
+/**
+ * Servicios Api
+ *
+ */
 .factory('EmpresasService', function($resource, BASE_URL) {
 	return $resource(BASE_URL + '/api/Empresas/:id', {
 		id: "@id"
@@ -226,6 +280,18 @@ angular.module('app.services', [])
 
 .factory('DetObservacionesService', function($resource, BASE_URL) {
 	return $resource(BASE_URL + '/api/Dependencias/:id', {
+		id: "@id"
+	});
+})
+
+.factory('ValorParametrosService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/ValorParametros/:id', {
+		id: "@id"
+	});
+})
+
+.factory('ParametrosService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/Parametros/:id', {
 		id: "@id"
 	});
 });

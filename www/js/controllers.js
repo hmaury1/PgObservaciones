@@ -158,17 +158,15 @@ angular.module('app.controllers', [])
 
 })
 
-.controller('ConfiguracionCtrl', function($rootScope, $scope, $ionicPopup, Empresas, EmpresasService, Lideres, LideresService) {
+.controller('ConfiguracionCtrl', function($rootScope, $scope, $ionicPopup, $cordovaNetwork, Empresas, EmpresasService, Lideres, LideresService,
+	Parametros, ParametrosService, ValorParametros, ValorParametrosService) {
 
-	$scope.sincronizar = function() {
-		/*Sincronizar.empezar().then(function() {
-			$ionicPopup.alert({
-				title: "Información",
-				content: 'Sincronización Completa'
-			});
-		});*/
-		$rootScope.$broadcast('loading:show');
-		var promise = EmpresasService.query().$promise;
+	var promise = null;
+
+	$scope.enableSync = false;
+
+	function cargarEmpresas() {
+		promise = EmpresasService.query().$promise;
 		promise.then(function(data) {
 			Empresas.truncate();
 			for (var i = 0; i < data.length; i++) {
@@ -179,8 +177,11 @@ angular.module('app.controllers', [])
 					RazonSocial: data[i].RazonSocial
 				});
 			}
+			cargarLideres();
 		});
+	}
 
+	function cargarLideres() {
 		promise = LideresService.query().$promise;
 		promise.then(function(data) {
 			Lideres.truncate();
@@ -195,13 +196,72 @@ angular.module('app.controllers', [])
 					Usuario: data[i].Usuario,
 				});
 			}
+			cargarParametros();
 		});
+	}
 
-		$rootScope.$broadcast('loading:hide');
-		$ionicPopup.alert({
-			title: "Información",
-			content: 'Sincronización Completa'
+	function cargarParametros() {
+		promise = ParametrosService.query().$promise;
+		promise.then(function(data) {
+			Parametros.truncate();
+			for (var i = 0; i < data.length; i++) {
+				Parametros.add({
+					IdParametro: data[i].IdParametro,
+					CodParametro: data[i].CodParametro,
+					Atributo: data[i].Atributo,
+					Descripcion: data[i].Descripcion,
+					EstadoParametro: data[i].EstadoParametro
+				});
+			}
+			cargarValorParametros();
 		});
+	}
+
+	function cargarValorParametros() {
+		promise = ValorParametrosService.query().$promise;
+		promise.then(function(data) {
+			ValorParametros.truncate();
+			for (var i = 0; i < data.length; i++) {
+				ValorParametros.add({
+					IdValorParametro: data[i].IdValorParametro,
+					IdParametro: data[i].IdParametro,
+					CodValorParametro: data[i].CodValorParametro,
+					CodParametro: data[i].CodParametro,
+					Valor: data[i].Valor,
+					Orden: data[i].Orden,
+					EstadoValorParametro: data[i].EstadoValorParametro
+				});
+			}
+			$rootScope.$broadcast('loading:hide');
+			$ionicPopup.alert({
+				title: "Información",
+				content: 'Sincronización Completa'
+			});
+		});
+	}
+
+	function init() {
+		if (window.Connection) {
+			var conn = $cordovaNetwork.getNetwork();
+			if (conn == Connection.NONE) {
+				$ionicPopup.alert({
+					title: "Internet Disconnected",
+					content: "El Dispositivo no tiene señal. Para continuar por favor conectese a una señaol WIFI o Datos Moviles"
+				});
+				$scope.enableSync = true;
+				// listen for Online event
+				$rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
+					$scope.enableSync = false;
+				})
+			}
+		}
+	}
+
+	$scope.sincronizar = function() {
+		$rootScope.$broadcast('loading:show');
+		cargarEmpresas();
 	};
+
+	init();
 
 });
