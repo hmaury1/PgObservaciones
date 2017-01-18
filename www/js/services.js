@@ -107,28 +107,24 @@ angular.module('app.services', [])
 	}
 
 	function add(obj) {
-		var parameters = [obj.key, obj.name];
-		return DBA.query("INSERT INTO Empresas (key , value) VALUES (?,?)", parameters);
+		var parameters = [obj.IdEmpresa, obj.IdEstadoEmpresa, obj.IdTipoEmpresa, obj.RazonSocial];
+		return DBA.query("INSERT INTO Empresas (IdEmpresa,IdEstadoEmpresa,IdTipoEmpresa,RazonSocial) VALUES (?,?,?,?)", parameters);
+	}
+
+	function truncate() {
+		return DBA.query("DELETE FROM Empresas")
 	}
 
 	return {
 		getAll: getAll,
-		get: get
+		get: get,
+		add: add,
+		truncate: truncate
 	};
 
 })
 
 .factory('Observaciones', function($q, DBA) {
-	//[IdObservacion] [int] IDENTITY(1,1) NOT NULL,
-	//[IdLider] [int] NULL,
-	//[Fecha] [datetime] NULL,
-	//[Lugar] [varchar](200) NULL,
-	//[IdEstadoObservacion] [varchar](10) NULL,
-	//[IdEmpresa] [int] NULL,
-	//[IdObservRemoto] [varchar](10) NULL,
-	//[PrefijoRemoto] [varchar](50) NULL,
-	//[NombreUsuario] [varchar](50) NULL,
-	//[IdEmpresaContratante] [int] NULL,
 
 	function add(obj) {
 		var parameters = [obj.IdLider, obj.Fecha, obj.Lugar, obj.IdEstadoObservacion, obj.IdEmpresa, obj.IdObservRemoto, obj.PrefijoRemoto, obj.NombreUsuario, obj.IdEmpresaContratante];
@@ -140,5 +136,96 @@ angular.module('app.services', [])
 	}
 })
 
+.factory('Lideres', function($q, DBA) {
 
-;
+	function getAll() {
+		return DBA.query("SELECT IdLider,IdEmpresa,IdDependencia,IdUsuario,Nombre,IdEstadoLider,Usuario FROM Lideres")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
+	function get(key) {
+		var parameters = [key];
+		return DBA.query("SELECT IdLider,IdEmpresa,IdDependencia,IdUsuario,Nombre,IdEstadoLider,Usuario FROM Lideres WHERE IdLider = (?)", parameters)
+			.then(function(result) {
+				return DBA.getById(result);
+			});
+	}
+
+	function add(obj) {
+		var parameters = [obj.IdLider, obj.IdEmpresa, obj.IdDependencia, obj.IdUsuario, obj.Nombre, obj.IdEstadoLider, obj.Usuario];
+		return DBA.query("INSERT INTO Lideres (IdLider,IdEmpresa,IdDependencia,IdUsuario,Nombre,IdEstadoLider,Usuario) VALUES (?,?,?,?,?,?,?)", parameters);
+	}
+
+	function truncate() {
+		return DBA.query("DELETE FROM Lideres");
+	}
+
+	return {
+		getAll: getAll,
+		get: get,
+		add: add,
+		truncate: truncate
+	};
+
+})
+
+
+.factory('DetObservaciones', function($q, DBA) {
+
+	function getAll() {
+		return DBA.query("SELECT IdDetObservacion,IdObservacion,IdEstandar,NumCompPositivos,NumCompObservados,Acciones,IdEstadoDetObservacion,IdDetObservRemoto,PrefijoRemoto FROM DetObservaciones")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
+	return {
+		getAll: getAll
+	}
+})
+
+.factory('Estandares', function($q, DBA) {
+
+	function getAll() {
+		return DBA.query("SELECT IdEstandar,Descripcion,IdTipoEstandar,IdEstadoEstandar FROM Estandares")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
+	return {
+		getAll: getAll
+	}
+})
+
+.factory('EmpresasService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/Empresas/:id', {
+		id: "@id"
+	});
+})
+
+.factory('LideresService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/Lideres/:id', {
+		id: "@id"
+	});
+})
+
+.factory('DependenciasService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/Dependencias/:id', {
+		id: "@id"
+	});
+})
+
+.factory('ObservacionesService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/Dependencias/:id', {
+		id: "@id"
+	});
+})
+
+.factory('DetObservacionesService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/Dependencias/:id', {
+		id: "@id"
+	});
+});

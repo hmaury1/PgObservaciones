@@ -2,7 +2,7 @@ angular.module('app.routes', [])
 
 .config(function($stateProvider, $httpProvider, $urlRouterProvider, ionicDatePickerProvider) {
 
-	$httpProvider.interceptors.push(function($rootScope, $q) {
+	/*$httpProvider.interceptors.push(function($rootScope, $q) {
 		return {
 			request: function(config) {
 				$rootScope.$broadcast('loading:show');
@@ -17,8 +17,11 @@ angular.module('app.routes', [])
 				return $q.reject(rejection);
 			}
 		}
-	});
+	});*/
 
+	//$httpProvider.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
+	//$httpProvider.defaults.useXDomain = true;
+	//delete $httpProvider.defaults.headers.common['X-Requested-With'];
 	var datePickerObj = {
 		inputDate: new Date(),
 		setLabel: 'Elegir',
@@ -91,6 +94,16 @@ angular.module('app.routes', [])
 			'side-content': {
 				templateUrl: 'templates/parametros.html',
 				controller: 'ParametrosCtrl'
+			}
+		}
+	})
+
+	.state('menu.configuracion', {
+		url: '/configuracion',
+		views: {
+			'side-content': {
+				templateUrl: 'templates/configuracion.html',
+				controller: 'ConfiguracionCtrl'
 			}
 		}
 	})

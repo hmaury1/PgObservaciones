@@ -61,7 +61,7 @@ angular.module('app.controllers', [])
 
 })
 
-.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones) {
+.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones, Estandares) {
 
 	$scope.data = {
 		empresaselected: null,
@@ -155,5 +155,53 @@ angular.module('app.controllers', [])
 })
 
 .controller('ParametrosCtrl', function($scope) {
+
+})
+
+.controller('ConfiguracionCtrl', function($rootScope, $scope, $ionicPopup, Empresas, EmpresasService, Lideres, LideresService) {
+
+	$scope.sincronizar = function() {
+		/*Sincronizar.empezar().then(function() {
+			$ionicPopup.alert({
+				title: "Información",
+				content: 'Sincronización Completa'
+			});
+		});*/
+		$rootScope.$broadcast('loading:show');
+		var promise = EmpresasService.query().$promise;
+		promise.then(function(data) {
+			Empresas.truncate();
+			for (var i = 0; i < data.length; i++) {
+				Empresas.add({
+					IdEmpresa: data[i].IdEmpresa,
+					IdEstadoEmpresa: data[i].IdEstadoEmpresa,
+					IdTipoEmpresa: data[i].IdTipoEmpresa,
+					RazonSocial: data[i].RazonSocial
+				});
+			}
+		});
+
+		promise = LideresService.query().$promise;
+		promise.then(function(data) {
+			Lideres.truncate();
+			for (var i = 0; i < data.length; i++) {
+				Lideres.add({
+					IdLider: data[i].IdLider,
+					IdEmpresa: data[i].IdEmpresa,
+					IdDependencia: data[i].IdDependencia,
+					IdUsuario: data[i].IdUsuario,
+					Nombre: data[i].Nombre,
+					IdEstadoLider: data[i].IdEstadoLider,
+					Usuario: data[i].Usuario,
+				});
+			}
+		});
+
+		$rootScope.$broadcast('loading:hide');
+		$ionicPopup.alert({
+			title: "Información",
+			content: 'Sincronización Completa'
+		});
+	};
 
 });

@@ -11,11 +11,9 @@
  */
 var db = null;
 
-angular.module('app', ['ionic', 'ngCordova', 'ionic-datepicker', 'app.controllers', 'app.routes', 'app.directives', 'app.services'])
+angular.module('app', ['ionic', 'ngCordova', 'ngResource', 'ionic-datepicker', 'app.controllers', 'app.routes', 'app.directives', 'app.services'])
 
-.value('BASE_URL', {
-	url: 'http://181.49.194.242:8020/PgObservacionesApi/'
-})
+.value('BASE_URL', 'http://181.49.194.242:8020/PgObservacionesApi')
 
 .run(function($rootScope, $ionicPlatform, $ionicLoading, $ionicPopup, $cordovaSQLite) {
 
