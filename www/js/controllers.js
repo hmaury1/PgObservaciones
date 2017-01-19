@@ -101,6 +101,21 @@ angular.module('app.controllers', [])
 		});
 	}
 
+	$scope.limpiarForm = function() {
+		$scope.data = {
+			empresaselected: null,
+			empresascontraselected: null,
+			empresa: {
+				IdEmpresa: $scope.empresas[0].IdEmpresa
+			},
+			empresascontra: {
+				IdEmpresa: $scope.empresas[0].IdEmpresa
+			},
+			fecha: '',
+			lugar: ''
+		};
+	};
+
 
 	$scope.continuar = function() {
 		var parames = {
@@ -267,11 +282,20 @@ angular.module('app.controllers', [])
 	init();
 })
 
-.controller('ObsPendientesCtrl', function($scope) {
+.controller('ObsPendientesCtrl', function($scope, Observaciones) {
+	$scope.items = [];
 
+	function init() {
+		Observaciones.getAll().then(function(data) {
+			console.debug(data);
+			$scope.items = data;
+		});
+	}
+
+	init();
 })
 
-.controller('ObsPorEnviarCtrl', function($scope) {
+.controller('ObsPorEnviarCtrl', function($scope, DetObservaciones) {
 
 })
 

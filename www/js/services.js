@@ -126,12 +126,20 @@ angular.module('app.services', [])
 
 .factory('Observaciones', function($q, DBA) {
 
+	function getAll() {
+		return DBA.query("SELECT IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante FROM Observaciones")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
 	function add(obj) {
 		var parameters = [obj.IdLider, obj.Fecha, obj.Lugar, obj.IdEstadoObservacion, obj.IdEmpresa, obj.IdObservRemoto, obj.PrefijoRemoto, obj.NombreUsuario, obj.IdEmpresaContratante];
 		return DBA.query("INSERT INTO Observaciones (IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", parameters);
 	}
 
 	return {
+		getAll: getAll,
 		add: add
 	}
 })
