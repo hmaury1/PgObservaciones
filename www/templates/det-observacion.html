@@ -1,28 +1,35 @@
 <ion-view view-title="Detalle Observación">
-	<ion-nav-buttons side="right">
-        <button class="button button-icon icon ion-loop" >Ver Obser</button>
+    <ion-nav-buttons side="right">
+        <button class="button button-icon icon ion-loop">Ver Obser</button>
     </ion-nav-buttons>
-  <ion-content has-header="true" padding="true">
-	<form name="formGuardar" ng-submit="guardarDetalle()">
-		<h2>Estandar</h2>
-		<div class="list">
-		 	<label class="item item-input">
-	         	<span class="input-label">NCP</span>
-	          	<input type="number" ng-model="data.ncp" required>
-	        </label>
-	        <label class="item item-input">
-	         	<span class="input-label">NCO</span>
-	          	<input type="number" ng-model="data.nco" required>
-	        </label>
-	        <label class="item item-input">
-	         	<span class="input-label">Acciones</span>
-	        	<textarea rows="5" ng-model="data.acciones"></textarea>
-	        </label>
-	    </div>
-	    <div class="row">
-	    	<div class="col"><button class="button button-block button-positive">Atras</button></div>
-			<div class="col"><button class="button button-block button-positive" type="submit"  ng-disabled="formGuardar.$invalid">Continuar</button></div>
-		</div>
-	</form>
-  </ion-content>
+    <ion-content has-header="true" padding="true">
+        <form name="formGuardar">
+            <div class="list">
+                <label class="item item-input">
+                    <span class="input-label">NCP</span>
+                    <input type="number" ng-model="data.ncp">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">NCO</span>
+                    <input type="number" ng-model="data.nco">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">Acciones</span>
+                    <textarea rows="5" ng-model="data.acciones"></textarea>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button class="button button-block button-positive" ng-disabled="disabledAtras" ng-click="atras()">Atras</button>
+                </div>
+                <div class="col">
+                    <button class="button button-block button-positive" ng-disabled="disabledContinuar" ng-click="continuar()">Continuar</button>
+                </div>
+            </div>
+        </form>
+        <p>
+            <h2>Estandar</h2>
+			{{descripcion}}
+        </p>
+    </ion-content>
 </ion-view>

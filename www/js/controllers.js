@@ -152,16 +152,116 @@ angular.module('app.controllers', [])
 	init();
 })
 
-.controller('DetalleObservacionCtrl', function($scope, $stateParams, Empresas) {
+.controller('DetalleObservacionCtrl', function($scope, $stateParams, DetObservaciones, Estandares) {
+	/**
+	 * id de la observacion
+	 * @type {Number}
+	 */
 	var id_observacion = $stateParams.id_observacion;
+	/**
+	 * Variable con que se lleva en conteo de cual formulario se muestra
+	 * @type {Number}
+	 */
+	var indice = 0;
+	/**
+	 * Mantengo el memoria la lista de detalle de observacion con sus campos a cambiar
+	 * @type {Array}
+	 */
+	var forms = [];
+	/**
+	 * Habilito el boton continuar
+	 * @type {Boolean}
+	 */
+	$scope.disabledContinuar = false;
+	/**
+	 * Habilito el boton atras
+	 * @type {Boolean}
+	 */
+	$scope.disabledAtras = true;
+	$scope.descripcion = '';
 	$scope.data = {
 		acciones: '',
 		ncp: 0,
-		nco: 0
+		nco: 0,
+		IdDetObservacion: 1,
+		IdEstandar: 1
 	};
 
-	function init() {
+	$scope.continuar = function() {
+		/**
+		 * Valido por cada continuar persisto en la base de datos
+		 */
+		DetObservaciones.updateDetalle($scope.data.ncp, $scope.data.nco, $scope.data.acciones, $scope.data.IdDetObservacion).then(function() {
+			/**
+			 * se actulizan los datos en memoria en cada formulario con su indice
+			 */
+			forms[indice].acciones = $scope.data.acciones;
+			forms[indice].ncp = $scope.data.ncp;
+			forms[indice].IdDetObservacion = $scope.data.IdDetObservacion;
+			forms[indice].nco = $scope.data.nco;
+			forms[indice].IdEstandar = $scope.data.IdEstandar;
 
+			if (indice == forms.length - 1) {
+				$scope.disabledContinuar = true;
+			} else {
+				$scope.disabledContinuar = false;
+				indice++;
+				if (indice == forms.length - 1) {
+					$scope.disabledContinuar = true;
+				}
+				$scope.disabledAtras = false;
+				loadForm();
+			}
+			loadEstandar();
+		});
+	};
+
+	$scope.atras = function() {
+		if (indice == 0) {
+			$scope.disabledAtras = true;
+			$scope.disabledContinuar = false;
+		} else {
+			indice--;
+			$scope.disabledContinuar = false;
+			if (indice == 0) {
+				$scope.disabledAtras = true;
+				$scope.disabledContinuar = false;
+			}
+			loadForm();
+		}
+		loadEstandar();
+	};
+
+	function loadForm() {
+		$scope.data = {
+			acciones: forms[indice].acciones,
+			ncp: forms[indice].ncp,
+			nco: forms[indice].nco,
+			IdDetObservacion: forms[indice].IdDetObservacion,
+			IdEstandar: forms[indice].IdEstandar
+		};
+	}
+
+	function loadEstandar() {
+		Estandares.get($scope.data.IdEstandar).then(function(data) {
+			$scope.descripcion = data.Descripcion;
+		});
+	}
+
+	function init() {
+		DetObservaciones.getByIdObservacion(id_observacion).then(function(data) {
+			for (var i = 0; i < data.length; i++) {
+				forms.push({
+					acciones: data[i].Acciones,
+					ncp: data[i].NumCompObservados,
+					nco: data[i].NumCompPositivos,
+					IdDetObservacion: data[i].IdDetObservacion,
+					IdEstandar: data[i].IdEstandar
+				});
+			}
+			loadForm();
+			loadEstandar();
+		});
 	}
 
 	init();

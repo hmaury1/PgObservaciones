@@ -195,9 +195,24 @@ angular.module('app.services', [])
 		return DBA.query("INSERT INTO DetObservaciones (IdObservacion,IdEstandar,NumCompPositivos,NumCompObservados,Acciones,IdEstadoDetObservacion,IdDetObservRemoto,PrefijoRemoto) VALUES (?,?,?,?,?,?,?,?)", parameters);
 	}
 
+	function getByIdObservacion(key) {
+		var parameters = [key];
+		return DBA.query("SELECT IdDetObservacion,IdObservacion,IdEstandar,NumCompPositivos,NumCompObservados,Acciones,IdEstadoDetObservacion,IdDetObservRemoto,PrefijoRemoto FROM DetObservaciones WHERE IdObservacion = (?)", parameters)
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
+	function updateDetalle(NCP, NCO, Acciones, AIdDetObservacion) {
+		var parameters = [NCP, NCO, Acciones, AIdDetObservacion];
+		return DBA.query("UPDATE DetObservaciones SET NumCompPositivos = (?), NumCompObservados = (?), Acciones = (?) WHERE IdDetObservacion = (?)", parameters);
+	}
+
 	return {
 		getAll: getAll,
-		add: add
+		add: add,
+		getByIdObservacion: getByIdObservacion,
+		updateDetalle: updateDetalle
 	}
 })
 
@@ -210,8 +225,17 @@ angular.module('app.services', [])
 			});
 	}
 
+	function get(key) {
+		var parameters = [key];
+		return DBA.query("SELECT IdEstandar,Descripcion,IdTipoEstandar,IdEstadoEstandar FROM Estandares WHERE IdEstandar = (?)", parameters)
+			.then(function(result) {
+				return DBA.getById(result);
+			});
+	}
+
 	return {
-		getAll: getAll
+		getAll: getAll,
+		get: get
 	}
 })
 
