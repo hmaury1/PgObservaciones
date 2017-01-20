@@ -25,8 +25,6 @@ angular.module('app.controllers', [])
 		init();
 	};
 
-
-
 	function init() {
 		$scope.chats = [];
 		var lista = [];
@@ -53,12 +51,48 @@ angular.module('app.controllers', [])
 
 })
 
-.controller('LoginCtrl', function($scope) {
+.controller('LoginCtrl', function($rootScope, $scope, $state, ionicAuth) {
 
+	$scope.data = {
+		'alias': 'edme115',
+		'password': 'Prueba567',
+		'recordar': false
+	};
+
+	$scope.error = '';
+	//console.log(ionicAuth.logout());
+	if (ionicAuth.isAuthenticated()) {
+		// Make sure the user data is going to be loaded
+		//$ionicUser.load().then(function() {});
+		//MERCADOID.id = $localstorage.get('recors');
+		$state.go('menu.crearobservacion');
+	}
+
+	$scope.login = function() {
+		$scope.error = '';
+		$rootScope.$broadcast('loading:show');
+		ionicAuth.login($scope.data.alias, $scope.data.password, $scope.data.recordar).then(function(data) {
+			$rootScope.$broadcast('loading:hide');
+			$state.go('menu.crearobservacion');
+		}, function(error) {
+			$scope.error = error.message;
+		})
+	};
 })
 
-.controller('MenuCtrl', function($scope) {
+.controller('MenuCtrl', function($scope, ionicAuth) {
+	$scope.isLogged = false;
+	$scope.$on("$ionicView.enter", function() {
+		$scope.isLogged = ionicAuth.isLogged;
+		$scope.$digest();
+	});
 
+	$scope.cerrarSession = function() {
+		ionicAuth.logout();
+		$scope.isLogged = false;
+		$ionicSideMenuDelegate.toggleLeft();
+		$state.go('menu.crearobservacion');
+	};
 })
 
 .controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones, Estandares, DetObservaciones) {
@@ -167,7 +201,7 @@ angular.module('app.controllers', [])
 	init();
 })
 
-.controller('DetalleObservacionCtrl', function($scope, $stateParams, DetObservaciones, Estandares) {
+.controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, DetObservaciones, Estandares) {
 	/**
 	 * id de la observacion
 	 * @type {Number}
@@ -201,8 +235,69 @@ angular.module('app.controllers', [])
 		IdDetObservacion: 1,
 		IdEstandar: 1
 	};
+	$scope.textoBoton = 'Continuar';
 
 	$scope.continuar = function() {
+
+		if ($scope.textoBoton == 'Guardar') {
+
+			updateDet(function() {
+				Observaciones.updateStatus(id_observacion).then(function() {
+					$ionicHistory.nextViewOptions({
+						disableBack: true
+					});
+					$state.go('menu.crearobservacion', {}, {
+						location: "replace",
+						reload: true
+					});
+				});
+			});
+
+		} else {
+			updateDet(function() {
+				if (indice == forms.length - 1) {
+					$scope.disabledContinuar = true;
+				} else {
+					$scope.disabledContinuar = false;
+					indice++;
+					if (indice == forms.length - 1) {
+						$scope.textoBoton = 'Guardar';
+						$scope.disabledContinuar = true;
+					}
+					$scope.disabledAtras = false;
+					loadForm();
+				}
+			});
+		}
+
+
+	};
+
+	$scope.atras = function() {
+		$scope.textoBoton = 'Continuar';
+		updateDet(function() {
+			if (indice == 0) {
+				$scope.disabledAtras = true;
+				$scope.disabledContinuar = false;
+			} else {
+				indice--;
+				$scope.disabledContinuar = false;
+				if (indice == 0) {
+					$scope.disabledAtras = true;
+					$scope.disabledContinuar = false;
+				}
+				loadForm();
+			}
+		});
+
+	};
+
+	/**
+	 * Actualizo el detalle de la observacion ya sea atras o adelante
+	 * @param  {[type]} func [description]
+	 * @return {[type]}      [description]
+	 */
+	function updateDet(func) {
 		/**
 		 * Valido por cada continuar persisto en la base de datos
 		 */
@@ -216,36 +311,10 @@ angular.module('app.controllers', [])
 			forms[indice].nco = $scope.data.nco;
 			forms[indice].IdEstandar = $scope.data.IdEstandar;
 
-			if (indice == forms.length - 1) {
-				$scope.disabledContinuar = true;
-			} else {
-				$scope.disabledContinuar = false;
-				indice++;
-				if (indice == forms.length - 1) {
-					$scope.disabledContinuar = true;
-				}
-				$scope.disabledAtras = false;
-				loadForm();
-			}
+			func();
 			loadEstandar();
 		});
-	};
-
-	$scope.atras = function() {
-		if (indice == 0) {
-			$scope.disabledAtras = true;
-			$scope.disabledContinuar = false;
-		} else {
-			indice--;
-			$scope.disabledContinuar = false;
-			if (indice == 0) {
-				$scope.disabledAtras = true;
-				$scope.disabledContinuar = false;
-			}
-			loadForm();
-		}
-		loadEstandar();
-	};
+	}
 
 	function loadForm() {
 		$scope.data = {

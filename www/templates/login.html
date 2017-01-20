@@ -1,0 +1,25 @@
+<ion-view title="Login" hide-nav-bar="true" cache-view="false" nav-transition="none" style="">
+    <ion-content padding="true" class="manual-ios-statusbar-padding" scroll="false">
+       <div class="spacer" style="width: 290px; height: 100px;"></div>
+ 			<div>
+                <img src="img/pgas.png" style="display: block; margin-left: auto; margin-right: auto;">
+            </div>
+        <form id="login-form1" name="userForm"  class="list center-form" ng-submit="login()">
+
+            <ion-list id="login-list1">
+                <label class="item item-input" id="login-input1" autofocus>
+                    <span class="input-label">Usuario</span>
+                    <input placeholder="" type="text" ng-model="data.alias" required autofocus>
+                </label>
+                <label class="item item-input" id="login-input2">
+                    <span class="input-label">Clave</span>
+                    <input placeholder="" type="password" ng-model="data.password" required>
+                </label>
+            </ion-list>
+
+            <ion-toggle ng-model="data.recordar" toggle-class="toggle-calm">Recordar</ion-toggle>
+            <div class="spacer" style="width: 290px; height: 22px;"></div>
+            <button type="submit" id="login-button1" class="button button-positive  button-block" ng-disabled="userForm.$invalid">Entrar</button>
+        </form>
+    </ion-content>
+</ion-view>

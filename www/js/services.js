@@ -138,9 +138,14 @@ angular.module('app.services', [])
 		return DBA.query("INSERT INTO Observaciones (IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", parameters);
 	}
 
+	function updateStatus(key) {
+		// body...
+	}
+
 	return {
 		getAll: getAll,
-		add: add
+		add: add,
+		updateStatus: updateStatus
 	}
 })
 
@@ -296,6 +301,60 @@ angular.module('app.services', [])
 		truncate: truncate
 	}
 })
+
+.factory('$localstorage', ['$window', function($window) {
+	return {
+		set: function(key, value) {
+			$window.localStorage[key] = value;
+		},
+		get: function(key, defaultValue) {
+			return $window.localStorage[key] || false;
+		},
+		setObject: function(key, value) {
+			$window.localStorage[key] = JSON.stringify(value);
+		},
+		getObject: function(key) {
+			if ($window.localStorage[key] != undefined)
+				return JSON.parse($window.localStorage[key] || false);
+
+			return false;
+		},
+		remove: function(key) {
+			$window.localStorage.removeItem(key);
+		},
+		clear: function() {
+			$window.localStorage.clear();
+		}
+	}
+}])
+
+.factory('ionicAuth', ['$q', '$http', 'BASE_URL', '$localstorage', function($q, $http, BASE_URL, $localstorage) {
+	return {
+		isLogged: false,
+		login: function(username, password, recordar) {
+			var deferred = $q.defer();
+			var me = this;
+			$http.post(BASE_URL + '/api/Login', {
+				Name: username,
+				Password: password
+			}).success(function(data) {
+				if (recordar) {
+					$localstorage.setObject('UserPg', data);
+				}
+				me.isLogged = true;
+				deferred.resolve(data);
+			}).error(deferred.reject);
+
+			return deferred.promise;
+		},
+		logout: function() {
+			$localstorage.clear();
+		},
+		isAuthenticated: function() {
+			return $localstorage.getObject('UserPg');
+		}
+	};
+}])
 
 /**
  * Servicios Api

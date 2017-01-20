@@ -20,12 +20,12 @@
           <i class="icon ion-clipboard"></i>Obser. Pendientes</ion-item>
         <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="menu.obsporenviar" menu-close="">
           <i class="icon ion-checkmark-round"></i>Obser. por Enviar</ion-item>
-        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="login" menu-close="">
+        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="login" ng-show="!isLogged" menu-close="">
           <i class="icon ion-ios-person-outline"></i>Login</ion-item>
-        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="menu.configuracion" menu-close="">
+        <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="menu.configuracion" ng-show="isLogged" menu-close="">
           <i class="icon ion-gear-b"></i>Configuración</ion-item>
       </ion-list>
-      <button id="menu-button5" class="button button-light  button-block">Cerrar Sessión</button>
+      <button id="menu-button5" class="button button-light  button-block" ng-show="isLogged" ng-click="cerrarSession()"  menu-close="">Cerrar Sessión</button>
     </ion-content>
   </ion-side-menu>
 </ion-side-menus>

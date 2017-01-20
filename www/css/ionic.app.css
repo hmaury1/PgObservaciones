@@ -9842,12 +9842,11 @@ a.button {
   box-shadow: 0px 0px 142px -37px rgba(0, 0, 0, 0.75); }
 
 .center-form {
+  width: 290px;
+  position: absolute;
   top: 50%;
-  /*width: 290px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);*/ }
+  left: 50%;
+  transform: translate(-50%, -50%); }
   .center-form label {
     background-color: rgba(255, 255, 255, 0.7);
     border-color: rgba(255, 255, 255, 0); }
