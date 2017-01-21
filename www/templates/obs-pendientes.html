@@ -1,8 +1,15 @@
 <ion-view view-title="Obs Pendientes">
-  <ion-content has-header="true" padding="true">
+	<ion-nav-buttons side="right">
+        <button class="button button-icon icon ion-loop" ng-click="refresh()"></button>
+    </ion-nav-buttons>
+  	<ion-content has-header="true" padding="true">
 	<ion-list>
-        <ion-item ng-repeat="item in items" class="item-thumbnail-right" ng-click="openConfirm(item)">
-		    <h2>{{ $index }} {{item.Lugar}}</h2>
+        <ion-item ng-repeat="item in items" class="item-thumbnail-right" ng-click="openDets(item)">
+		    <h2><b>{{item.Lugar}}</b></h2>
+		    <h2>{{item.Fecha}}</h2>
+		    <div class="item-icon-right">
+		        <i class="icon ion-ios-arrow-right"></i>
+		    </div>
 	     	<ion-delete-button class="ion-minus-circled" ng-click="items.splice($index, 1)">
 			</ion-delete-button>
 		</ion-item>

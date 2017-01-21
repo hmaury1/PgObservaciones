@@ -127,7 +127,7 @@ angular.module('app.services', [])
 .factory('Observaciones', function($q, DBA) {
 
 	function getAll() {
-		return DBA.query("SELECT IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante FROM Observaciones")
+		return DBA.query("SELECT IdObservacion,IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante FROM Observaciones")
 			.then(function(result) {
 				return DBA.getAll(result);
 			});
@@ -139,13 +139,29 @@ angular.module('app.services', [])
 	}
 
 	function updateStatus(key) {
-		// body...
+		var parameters = [key];
+		return DBA.query("UPDATE Observaciones SET IdEstadoObservacion = '13'  WHERE IdObservacion = (?)", parameters);
 	}
+
+	function getAllDetPent() {
+		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 12 GROUP BY obs.IdObservacion").then(function(result) {
+			return DBA.getAll(result);
+		});
+	}
+
+	function getAllDetPorEnviar() {
+		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 13 GROUP BY obs.IdObservacion").then(function(result) {
+			return DBA.getAll(result);
+		});
+	}
+
 
 	return {
 		getAll: getAll,
 		add: add,
-		updateStatus: updateStatus
+		updateStatus: updateStatus,
+		getAllDetPent: getAllDetPent,
+		getAllDetPorEnviar: getAllDetPorEnviar
 	}
 })
 
@@ -217,8 +233,17 @@ angular.module('app.services', [])
 	}
 
 	function updateDetalle(NCP, NCO, Acciones, AIdDetObservacion) {
-		var parameters = [NCP, NCO, Acciones, AIdDetObservacion];
-		return DBA.query("UPDATE DetObservaciones SET NumCompPositivos = (?), NumCompObservados = (?), Acciones = (?) WHERE IdDetObservacion = (?)", parameters);
+		var parameters = [NCP, NCO, Acciones],
+			IdEstadoDetObservacion = 12;
+		if (NCP > 0 && NCO > 0 && Acciones != '') {
+			IdEstadoDetObservacion = 13;
+			parameters.push(IdEstadoDetObservacion);
+		} else {
+			parameters.push(IdEstadoDetObservacion);
+		}
+		parameters.push(AIdDetObservacion);
+
+		return DBA.query("UPDATE DetObservaciones SET NumCompPositivos = (?), NumCompObservados = (?), Acciones = (?), IdEstadoDetObservacion = (?) WHERE IdDetObservacion = (?)", parameters);
 	}
 
 	return {

@@ -156,7 +156,7 @@ angular.module('app.controllers', [])
 			IdLider: 0,
 			Fecha: $scope.data.fecha,
 			Lugar: $scope.data.lugar,
-			IdEstadoObservacion: 'OBSEACTIVO',
+			IdEstadoObservacion: '12',
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
 			IdObservRemoto: '',
 			PrefijoRemoto: '',
@@ -185,7 +185,7 @@ angular.module('app.controllers', [])
 						NumCompPositivos: 0,
 						NumCompObservados: 0,
 						Acciones: '',
-						IdEstadoDetObservacion: 0,
+						IdEstadoDetObservacion: 12,
 						IdDetObservRemoto: 0,
 						PrefijoRemoto: 0
 					});
@@ -201,7 +201,7 @@ angular.module('app.controllers', [])
 	init();
 })
 
-.controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, DetObservaciones, Estandares) {
+.controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, DetObservaciones, Estandares, Observaciones) {
 	/**
 	 * id de la observacion
 	 * @type {Number}
@@ -242,15 +242,15 @@ angular.module('app.controllers', [])
 		if ($scope.textoBoton == 'Guardar') {
 
 			updateDet(function() {
-				Observaciones.updateStatus(id_observacion).then(function() {
-					$ionicHistory.nextViewOptions({
-						disableBack: true
-					});
-					$state.go('menu.crearobservacion', {}, {
-						location: "replace",
-						reload: true
-					});
+				//Observaciones.updateStatus(id_observacion).then(function() {
+				$ionicHistory.nextViewOptions({
+					disableBack: true
 				});
+				$state.go('menu.crearobservacion', {}, {
+					location: "replace",
+					reload: true
+				});
+				//});
 			});
 
 		} else {
@@ -262,7 +262,7 @@ angular.module('app.controllers', [])
 					indice++;
 					if (indice == forms.length - 1) {
 						$scope.textoBoton = 'Guardar';
-						$scope.disabledContinuar = true;
+						$scope.disabledContinuar = false;
 					}
 					$scope.disabledAtras = false;
 					loadForm();
@@ -333,6 +333,7 @@ angular.module('app.controllers', [])
 	}
 
 	function init() {
+		indice = 0;
 		DetObservaciones.getByIdObservacion(id_observacion).then(function(data) {
 			for (var i = 0; i < data.length; i++) {
 				forms.push({
@@ -348,24 +349,83 @@ angular.module('app.controllers', [])
 		});
 	}
 
-	init();
+	$scope.$on('$ionicView.enter', function(e) {
+		init();
+	});
+
 })
 
-.controller('ObsPendientesCtrl', function($scope, Observaciones) {
+.controller('ObsPendientesCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones) {
+
+	var count = 0;
 	$scope.items = [];
 
+	$scope.refresh = function() {
+		$scope.items = [];
+		init();
+	};
+
+	$scope.openDets = function(item) {
+		$state.go('menu.det-observacion', {
+			id_observacion: item.IdObservacion
+		});
+	};
+
 	function init() {
-		Observaciones.getAll().then(function(data) {
-			console.debug(data);
-			$scope.items = data;
+		$rootScope.$broadcast('loading:show');
+		Estandares.getAll().then(function(data1) {
+			count = data1.length;
+			Observaciones.getAllDetPent().then(function(data) {
+				for (var i = 0; i < data.length; i++) {
+					if (data[i].registros < count) {
+						$scope.items.push(data[i]);
+					} else {
+						Observaciones.updateStatus(data[i].IdObservacion);
+					}
+				}
+				$rootScope.$broadcast('loading:hide');
+			});
 		});
 	}
-
-	init();
+	$scope.$on('$ionicView.enter', function(e) {
+		init();
+	});
 })
 
-.controller('ObsPorEnviarCtrl', function($scope, DetObservaciones) {
+.controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones) {
+	var count = 0;
+	$scope.items = [];
 
+	$scope.refresh = function() {
+		$scope.items = [];
+		init();
+	};
+
+	$scope.openDets = function(item) {
+		$state.go('menu.det-observacion', {
+			id_observacion: item.IdObservacion
+		});
+	};
+
+	function init() {
+		$rootScope.$broadcast('loading:show');
+		Estandares.getAll().then(function(data1) {
+			count = data1.length;
+			Observaciones.getAllDetPorEnviar().then(function(data) {
+				console.log(data);
+				for (var i = 0; i < data.length; i++) {
+					if (data[i].registros == count) {
+						$scope.items.push(data[i]);
+						Observaciones.updateStatus(data[i].IdObservacion);
+					}
+				}
+				$rootScope.$broadcast('loading:hide');
+			});
+		});
+	}
+	$scope.$on('$ionicView.enter', function(e) {
+		init();
+	});
 })
 
 .controller('ParametrosCtrl', function($scope) {

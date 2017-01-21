@@ -1,6 +1,21 @@
 <ion-view view-title="Obs Por Enviar">
-  <ion-content has-header="true" padding="true">
-    <h2>Obs  Por Enviar</h2>
-
+  	<ion-nav-buttons side="right">
+        <button class="button button-icon icon ion-loop" ng-click="refresh()"></button>
+    </ion-nav-buttons>
+  	<ion-content has-header="true" padding="true">
+	<ion-list>
+        <ion-item ng-repeat="item in items" class="item-thumbnail-right" ng-click="openDets(item)">
+		    <h2><b>{{item.Lugar}}</b></h2>
+		    <h2>{{item.Fecha}}</h2>
+		    <div class="item-icon-right">
+		        <i class="icon ion-ios-arrow-right"></i>
+		    </div>
+	     	<ion-delete-button class="ion-minus-circled" ng-click="items.splice($index, 1)">
+			</ion-delete-button>
+		</ion-item>
+	</ion-list>
   </ion-content>
+  <fab-button-right target-id="content" css-class="app-fab-btn" ng-click="enviar()">
+        <i class="icon ion ion-paper-airplane"></i>
+      </fab-button-right>
 </ion-view>
