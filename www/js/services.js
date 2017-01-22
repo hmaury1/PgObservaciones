@@ -271,9 +271,20 @@ angular.module('app.services', [])
 			});
 	}
 
+	function add(obj) {
+		var parameters = [obj.IdEstandar, obj.Descripcion, obj.IdTipoEstandar, obj.IdEstadoEstandar];
+		return DBA.query("INSERT INTO Estandares (IdEstandar,Descripcion,IdTipoEstandar,IdEstadoEstandar) VALUES (?,?,?,?)", parameters);
+	}
+
+	function truncate() {
+		return DBA.query("DELETE FROM Estandares");
+	}
+
 	return {
 		getAll: getAll,
-		get: get
+		get: get,
+		truncate: truncate,
+		add: add
 	}
 })
 
@@ -423,6 +434,12 @@ angular.module('app.services', [])
 
 .factory('ParametrosService', function($resource, BASE_URL) {
 	return $resource(BASE_URL + '/api/Parametros/:id', {
+		id: "@id"
+	});
+})
+
+.factory('EstandaresService', function($resource, BASE_URL) {
+	return $resource(BASE_URL + '/api/Estandares/:id', {
 		id: "@id"
 	});
 });

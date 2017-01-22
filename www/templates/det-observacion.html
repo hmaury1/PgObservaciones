@@ -3,15 +3,19 @@
         <button class="button button-icon icon ion-loop">Ver Obser</button>
     </ion-nav-buttons>
     <ion-content has-header="true" padding="true">
+        <p>
+            <h3>Estandar #{{ indiceEstandar }}</h3>
+			{{descripcion}}
+        </p>
         <form name="formGuardar">
             <div class="list">
                 <label class="item item-input">
-                    <span class="input-label">NCP</span>
-                    <input type="number" ng-model="data.ncp">
+                    <span class="input-label">Comportamientos Observados</span>
+                    <input type="number" ng-model="data.nco">
                 </label>
                 <label class="item item-input">
-                    <span class="input-label">NCO</span>
-                    <input type="number" ng-model="data.nco">
+                    <span class="input-label">Comportamientos Positivos</span>
+                    <input type="number" ng-model="data.ncp">
                 </label>
                 <label class="item item-input">
                     <span class="input-label">Acciones</span>
@@ -27,9 +31,5 @@
                 </div>
             </div>
         </form>
-        <p>
-            <h2>Estandar</h2>
-			{{descripcion}}
-        </p>
     </ion-content>
 </ion-view>

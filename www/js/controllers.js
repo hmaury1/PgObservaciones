@@ -80,7 +80,7 @@ angular.module('app.controllers', [])
 	};
 })
 
-.controller('MenuCtrl', function($scope, ionicAuth) {
+.controller('MenuCtrl', function($scope, ionicAuth, $ionicSideMenuDelegate) {
 	$scope.isLogged = false;
 	$scope.$on("$ionicView.enter", function() {
 		$scope.isLogged = ionicAuth.isLogged;
@@ -235,10 +235,11 @@ angular.module('app.controllers', [])
 		IdDetObservacion: 1,
 		IdEstandar: 1
 	};
+	$scope.indiceEstandar = 1;
 	$scope.textoBoton = 'Continuar';
 
 	$scope.continuar = function() {
-
+		$scope.indiceEstandar++;
 		if ($scope.textoBoton == 'Guardar') {
 
 			updateDet(function() {
@@ -275,6 +276,7 @@ angular.module('app.controllers', [])
 
 	$scope.atras = function() {
 		$scope.textoBoton = 'Continuar';
+		$scope.indiceEstandar--;
 		updateDet(function() {
 			if (indice == 0) {
 				$scope.disabledAtras = true;
@@ -328,12 +330,14 @@ angular.module('app.controllers', [])
 
 	function loadEstandar() {
 		Estandares.get($scope.data.IdEstandar).then(function(data) {
+
 			$scope.descripcion = data.Descripcion;
 		});
 	}
 
 	function init() {
 		indice = 0;
+		$scope.data.indiceEstandar = 1;
 		DetObservaciones.getByIdObservacion(id_observacion).then(function(data) {
 			for (var i = 0; i < data.length; i++) {
 				forms.push({
@@ -344,6 +348,7 @@ angular.module('app.controllers', [])
 					IdEstandar: data[i].IdEstandar
 				});
 			}
+
 			loadForm();
 			loadEstandar();
 		});
@@ -372,6 +377,7 @@ angular.module('app.controllers', [])
 	};
 
 	function init() {
+		$scope.items = [];
 		$rootScope.$broadcast('loading:show');
 		Estandares.getAll().then(function(data1) {
 			count = data1.length;
@@ -408,11 +414,11 @@ angular.module('app.controllers', [])
 	};
 
 	function init() {
+		$scope.items = [];
 		$rootScope.$broadcast('loading:show');
 		Estandares.getAll().then(function(data1) {
 			count = data1.length;
 			Observaciones.getAllDetPorEnviar().then(function(data) {
-				console.log(data);
 				for (var i = 0; i < data.length; i++) {
 					if (data[i].registros == count) {
 						$scope.items.push(data[i]);
@@ -433,7 +439,7 @@ angular.module('app.controllers', [])
 })
 
 .controller('ConfiguracionCtrl', function($rootScope, $scope, $ionicPopup, $cordovaNetwork, Empresas, EmpresasService, Lideres, LideresService,
-	Parametros, ParametrosService, ValorParametros, ValorParametrosService) {
+	Parametros, ParametrosService, ValorParametros, ValorParametrosService, Estandares, EstandaresService) {
 
 	var promise = null;
 
@@ -504,6 +510,23 @@ angular.module('app.controllers', [])
 					Valor: data[i].Valor,
 					Orden: data[i].Orden,
 					EstadoValorParametro: data[i].EstadoValorParametro
+				});
+			}
+			cargarEstandares();
+
+		});
+	}
+
+	function cargarEstandares() {
+		promise = EstandaresService.query().$promise;
+		promise.then(function(data) {
+			Estandares.truncate();
+			for (var i = 0; i < data.length; i++) {
+				Estandares.add({
+					IdEstandar: data[i].IdEstandar,
+					Descripcion: data[i].Descripcion,
+					IdTipoEstandar: data[i].IdTipoEstandar,
+					IdEstadoEstandar: data[i].IdEstadoEstandar
 				});
 			}
 			$rootScope.$broadcast('loading:hide');
