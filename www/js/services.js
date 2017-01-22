@@ -133,6 +133,14 @@ angular.module('app.services', [])
 			});
 	}
 
+	function get(key) {
+		var parameters = [key];
+		return DBA.query("SELECT IdObservacion,IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante FROM Observaciones  WHERE IdObservacion = (?)", parameters)
+			.then(function(result) {
+				return DBA.getById(result);
+			});
+	}
+
 	function add(obj) {
 		var parameters = [obj.IdLider, obj.Fecha, obj.Lugar, obj.IdEstadoObservacion, obj.IdEmpresa, obj.IdObservRemoto, obj.PrefijoRemoto, obj.NombreUsuario, obj.IdEmpresaContratante];
 		return DBA.query("INSERT INTO Observaciones (IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", parameters);
@@ -161,7 +169,8 @@ angular.module('app.services', [])
 		add: add,
 		updateStatus: updateStatus,
 		getAllDetPent: getAllDetPent,
-		getAllDetPorEnviar: getAllDetPorEnviar
+		getAllDetPorEnviar: getAllDetPorEnviar,
+		get: get
 	}
 })
 

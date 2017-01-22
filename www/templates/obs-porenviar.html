@@ -9,9 +9,8 @@
 		    <h2>{{item.Fecha}}</h2>
 		    <div class="item-icon-right">
 		        <i class="icon ion-ios-arrow-right"></i>
-		    </div>
-	     	<ion-delete-button class="ion-minus-circled" ng-click="items.splice($index, 1)">
-			</ion-delete-button>
+		    </div>		    
+	     	<ion-option-button class="button-positive" ng-click="save(item)">Enviar</ion-option-button>
 		</ion-item>
 	</ion-list>
   </ion-content>

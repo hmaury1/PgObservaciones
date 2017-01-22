@@ -60,7 +60,6 @@ angular.module('app.controllers', [])
 	};
 
 	$scope.error = '';
-	//console.log(ionicAuth.logout());
 	if (ionicAuth.isAuthenticated()) {
 		// Make sure the user data is going to be loaded
 		//$ionicUser.load().then(function() {});
@@ -398,7 +397,7 @@ angular.module('app.controllers', [])
 	});
 })
 
-.controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones) {
+.controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, ObservacionesService) {
 	var count = 0;
 	$scope.items = [];
 
@@ -410,6 +409,22 @@ angular.module('app.controllers', [])
 	$scope.openDets = function(item) {
 		$state.go('menu.det-observacion', {
 			id_observacion: item.IdObservacion
+		});
+	};
+
+	$scope.save = function(item) {
+
+		Observaciones.get(item.IdObservacion).then(function(obs) {
+
+
+		});
+
+		var entry = new ObservacionesService(); //You can instantiate resource class
+
+		entry.data = 'some data';
+
+		ObservacionesService.save(entry, function() {
+
 		});
 	};
 
