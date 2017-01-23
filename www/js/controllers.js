@@ -3,8 +3,8 @@ angular.module('app.controllers', [])
 .controller('LoginCtrl', function($rootScope, $scope, $state, ionicAuth, Lideres, $ionicPopup, LideresService) {
 
 	$scope.data = {
-		'alias': '',
-		'password': '',
+		'alias': 'edme115',
+		'password': 'Prueba567',
 		'recordar': true
 	};
 
