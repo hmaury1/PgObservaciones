@@ -3,8 +3,8 @@ angular.module('app.controllers', [])
 .controller('LoginCtrl', function($rootScope, $scope, $state, ionicAuth, Lideres, $ionicPopup, LideresService) {
 
 	$scope.data = {
-		'alias': 'edme115',
-		'password': 'Prueba567',
+		'alias': '',
+		'password': '',
 		'recordar': true
 	};
 
@@ -22,28 +22,29 @@ angular.module('app.controllers', [])
 		ionicAuth.login($scope.data.alias, $scope.data.password, $scope.data.recordar).then(function(data) {
 			if (data.success) {
 				Lideres.getUser(data.id).then(function(result) {
-					if (result == null) {
+					if (result == null || result == '') {
 						var promise = LideresService.query().$promise;
-						promise.then(function(data) {
+						promise.then(function(result33) {
 							Lideres.truncate();
-							for (var i = 0; i < data.length; i++) {
+							for (var i = 0; i < result33.length; i++) {
 								Lideres.add({
-									IdLider: data[i].IdLider,
-									IdEmpresa: data[i].IdEmpresa,
-									IdDependencia: data[i].IdDependencia,
-									IdUsuario: data[i].IdUsuario,
-									Nombre: data[i].Nombre,
-									IdEstadoLider: data[i].IdEstadoLider,
-									Usuario: data[i].Usuario,
+									IdLider: result33[i].IdLider,
+									IdEmpresa: result33[i].IdEmpresa,
+									IdDependencia: result33[i].IdDependencia,
+									IdUsuario: result33[i].IdUsuario,
+									Nombre: result33[i].Nombre,
+									IdEstadoLider: result33[i].IdEstadoLider,
+									Usuario: result33[i].Usuario,
 								});
 							}
-							Lideres.getUser(data.id).then(function(result) {
-								if (result == null) {
+							Lideres.getUser(data.id).then(function(result2) {
+								if (result2 == null) {
 									$rootScope.$broadcast('loading:hide');
 									$ionicPopup.alert({
 										title: "Información",
 										content: 'Usted no se encuentra en la lista de Lideres'
 									});
+									ionicAuth.logout();
 								} else {
 									$rootScope.$broadcast('loading:hide');
 									$state.go('menu.crearobservacion');
