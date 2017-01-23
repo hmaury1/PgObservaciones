@@ -1,62 +1,11 @@
 angular.module('app.controllers', [])
 
-.controller('ChatsCtrl', function($scope, Chats) {
-	// With the new view caching in Ionic, Controllers are only called
-	// when they are recreated or on app start, instead of every page change.
-	// To listen for when this page is active (for example, to refresh data),
-	// listen for the $ionicView.enter event:
-	//
-	//$scope.$on('$ionicView.enter', function(e) {
-	//});
-	//
-	$scope.data = {
-		name: '',
-		lastText: ''
-	};
-
-
-	$scope.guardar = function() {
-
-		Chats.save($scope.data.name, $scope.data.lastText);
-		$scope.data = {
-			name: '',
-			lastText: ''
-		};
-		init();
-	};
-
-	function init() {
-		$scope.chats = [];
-		var lista = [];
-		var chats = Chats.all().then(function(datar) {
-			var data = datar;
-			for (var i = 0; i < data.length; i++) {
-
-				lista.push({
-					name: data[i].name,
-					lastText: data[i].lasttext
-				});
-
-			}
-		});
-
-		$scope.chats = lista;
-	}
-
-	$scope.remove = function(chat) {
-		Chats.remove(chat);
-	};
-
-	init();
-
-})
-
-.controller('LoginCtrl', function($rootScope, $scope, $state, ionicAuth) {
+.controller('LoginCtrl', function($rootScope, $scope, $state, ionicAuth, Lideres, $ionicPopup, LideresService) {
 
 	$scope.data = {
 		'alias': 'edme115',
 		'password': 'Prueba567',
-		'recordar': false
+		'recordar': true
 	};
 
 	$scope.error = '';
@@ -71,18 +20,54 @@ angular.module('app.controllers', [])
 		$scope.error = '';
 		$rootScope.$broadcast('loading:show');
 		ionicAuth.login($scope.data.alias, $scope.data.password, $scope.data.recordar).then(function(data) {
-			$rootScope.$broadcast('loading:hide');
-			$state.go('menu.crearobservacion');
+			if (data.success) {
+				Lideres.getUser(data.id).then(function(result) {
+					if (result == null) {
+						var promise = LideresService.query().$promise;
+						promise.then(function(data) {
+							Lideres.truncate();
+							for (var i = 0; i < data.length; i++) {
+								Lideres.add({
+									IdLider: data[i].IdLider,
+									IdEmpresa: data[i].IdEmpresa,
+									IdDependencia: data[i].IdDependencia,
+									IdUsuario: data[i].IdUsuario,
+									Nombre: data[i].Nombre,
+									IdEstadoLider: data[i].IdEstadoLider,
+									Usuario: data[i].Usuario,
+								});
+							}
+							Lideres.getUser(data.id).then(function(result) {
+								if (result == null) {
+									$rootScope.$broadcast('loading:hide');
+									$ionicPopup.alert({
+										title: "Información",
+										content: 'Usted no se encuentra en la lista de Lideres'
+									});
+								} else {
+									$rootScope.$broadcast('loading:hide');
+									$state.go('menu.crearobservacion');
+								}
+							});
+						});
+
+					} else {
+						$rootScope.$broadcast('loading:hide');
+						$state.go('menu.crearobservacion');
+					}
+				});
+			}
 		}, function(error) {
 			$scope.error = error.message;
 		})
 	};
 })
 
-.controller('MenuCtrl', function($scope, ionicAuth, $ionicSideMenuDelegate) {
+.controller('MenuCtrl', function($scope, ionicAuth, $ionicSideMenuDelegate, $state) {
 	$scope.isLogged = false;
 	$scope.$on("$ionicView.enter", function() {
-		$scope.isLogged = ionicAuth.isLogged;
+		$scope.isLogged = ionicAuth.isAuthenticated();
+
 		$scope.$digest();
 	});
 
@@ -155,9 +140,9 @@ angular.module('app.controllers', [])
 			IdLider: 0,
 			Fecha: $scope.data.fecha,
 			Lugar: $scope.data.lugar,
-			IdEstadoObservacion: '12',
+			IdEstadoObservacion: 'OBSEPEN',
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
-			IdObservRemoto: '',
+			IdObservRemoto: 'DOBSACTIVO',
 			PrefijoRemoto: '',
 			NombreUsuario: '',
 			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
@@ -184,8 +169,8 @@ angular.module('app.controllers', [])
 						NumCompPositivos: 0,
 						NumCompObservados: 0,
 						Acciones: '',
-						IdEstadoDetObservacion: 12,
-						IdDetObservRemoto: 0,
+						IdEstadoDetObservacion: 'DOBSPEN',
+						IdDetObservRemoto: 'DOBSACTIVO',
 						PrefijoRemoto: 0
 					});
 				}
@@ -200,7 +185,7 @@ angular.module('app.controllers', [])
 	init();
 })
 
-.controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, DetObservaciones, Estandares, Observaciones) {
+.controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, $ionicPopup, DetObservaciones, Estandares, Observaciones) {
 	/**
 	 * id de la observacion
 	 * @type {Number}
@@ -238,6 +223,15 @@ angular.module('app.controllers', [])
 	$scope.textoBoton = 'Continuar';
 
 	$scope.continuar = function() {
+
+		if (!validar()) {
+			$ionicPopup.alert({
+				title: "Información",
+				content: 'Los comportamientos positivos tienes que ser menor o igual a los observados'
+			});
+			return;
+		}
+
 		$scope.indiceEstandar++;
 		if ($scope.textoBoton == 'Guardar') {
 
@@ -274,6 +268,13 @@ angular.module('app.controllers', [])
 	};
 
 	$scope.atras = function() {
+		if (!validar()) {
+			$ionicPopup.alert({
+				title: "Información",
+				content: 'Los comportamientos positivos tienes que ser menor o igual a los observados'
+			});
+			return;
+		}
 		$scope.textoBoton = 'Continuar';
 		$scope.indiceEstandar--;
 		updateDet(function() {
@@ -292,6 +293,10 @@ angular.module('app.controllers', [])
 		});
 
 	};
+	//Los comportamiento positivos tienes que ser menor o igual a los observados nunca mayor
+	function validar() {
+		return ($scope.data.nco > $scope.data.ncp ? false : true);
+	}
 
 	/**
 	 * Actualizo el detalle de la observacion ya sea atras o adelante
@@ -329,7 +334,6 @@ angular.module('app.controllers', [])
 
 	function loadEstandar() {
 		Estandares.get($scope.data.IdEstandar).then(function(data) {
-
 			$scope.descripcion = data.Descripcion;
 		});
 	}
@@ -397,7 +401,7 @@ angular.module('app.controllers', [])
 	});
 })
 
-.controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, ObservacionesService) {
+.controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, ObservacionesService, Lideres, $localstorage, $ionicPopup) {
 	var count = 0;
 	$scope.items = [];
 
@@ -415,17 +419,37 @@ angular.module('app.controllers', [])
 	$scope.save = function(item) {
 
 		Observaciones.get(item.IdObservacion).then(function(obs) {
+			var user = $localstorage.getObject('UserPg');
 
-
+			if (user == false) {
+				$ionicPopup.alert({
+					title: "Información",
+					content: 'Debe iniciar sesión para poder enviar las observaciones'
+				}).then(function() {
+					$state.go('login');
+				});
+				return;
+			}
+			$rootScope.$broadcast('loading:show');
+			Lideres.getUser(user.id).then(function(data) {
+				obs.IdLider = data.IdLider;
+				obs.NombreUsuario = data.Nombre;
+				obs.movil = 1;
+				var entry = new ObservacionesService(); //You can instantiate resource class
+				entry = obs;
+				DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
+					entry.DetObservaciones = alldet;
+					ObservacionesService.save(entry, function(res) {
+						$rootScope.$broadcast('loading:hide');
+						if (res.IdObservacion) {
+							Observaciones.deleteById(item.IdObservacion);
+							$scope.refresh();
+						}
+					});
+				});
+			});
 		});
 
-		var entry = new ObservacionesService(); //You can instantiate resource class
-
-		entry.data = 'some data';
-
-		ObservacionesService.save(entry, function() {
-
-		});
 	};
 
 	function init() {

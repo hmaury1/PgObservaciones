@@ -31,7 +31,9 @@ angular.module('app.services', [])
 	// Proces a single result
 	function getById(result) {
 		var output = null;
-		output = angular.copy(result.rows.item(0));
+		if (result.rows.length > 0) {
+			output = angular.copy(result.rows.item(0));
+		}
 		return output;
 	}
 
@@ -112,7 +114,7 @@ angular.module('app.services', [])
 	}
 
 	function truncate() {
-		return DBA.query("DELETE FROM Empresas")
+		return DBA.query("DELETE FROM Empresas");
 	}
 
 	return {
@@ -148,19 +150,23 @@ angular.module('app.services', [])
 
 	function updateStatus(key) {
 		var parameters = [key];
-		return DBA.query("UPDATE Observaciones SET IdEstadoObservacion = '13'  WHERE IdObservacion = (?)", parameters);
+		return DBA.query("UPDATE Observaciones SET IdEstadoObservacion = 'OBSEACTIVO'  WHERE IdObservacion = (?)", parameters);
 	}
 
 	function getAllDetPent() {
-		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 12 GROUP BY obs.IdObservacion").then(function(result) {
+		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 'OBSEPEN' GROUP BY obs.IdObservacion").then(function(result) {
 			return DBA.getAll(result);
 		});
 	}
 
 	function getAllDetPorEnviar() {
-		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 13 GROUP BY obs.IdObservacion").then(function(result) {
+		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 'DOBSACTIVO' GROUP BY obs.IdObservacion").then(function(result) {
 			return DBA.getAll(result);
 		});
+	}
+
+	function deleteById(key) {
+		return DBA.query("DELETE FROM Observaciones WHERE IdObservacion = (?)", [key]);
 	}
 
 
@@ -170,7 +176,8 @@ angular.module('app.services', [])
 		updateStatus: updateStatus,
 		getAllDetPent: getAllDetPent,
 		getAllDetPorEnviar: getAllDetPorEnviar,
-		get: get
+		get: get,
+		deleteById: deleteById
 	}
 })
 
@@ -191,6 +198,14 @@ angular.module('app.services', [])
 			});
 	}
 
+	function getUser(key) {
+		var parameters = [key];
+		return DBA.query("SELECT IdLider,IdEmpresa,IdDependencia,IdUsuario,Nombre,IdEstadoLider,Usuario FROM Lideres WHERE IdUsuario = (?)", parameters)
+			.then(function(result) {
+				return DBA.getById(result);
+			});
+	}
+
 	function add(obj) {
 		var parameters = [obj.IdLider, obj.IdEmpresa, obj.IdDependencia, obj.IdUsuario, obj.Nombre, obj.IdEstadoLider, obj.Usuario];
 		return DBA.query("INSERT INTO Lideres (IdLider,IdEmpresa,IdDependencia,IdUsuario,Nombre,IdEstadoLider,Usuario) VALUES (?,?,?,?,?,?,?)", parameters);
@@ -204,7 +219,8 @@ angular.module('app.services', [])
 		getAll: getAll,
 		get: get,
 		add: add,
-		truncate: truncate
+		truncate: truncate,
+		getUser: getUser
 	};
 
 })
@@ -243,9 +259,9 @@ angular.module('app.services', [])
 
 	function updateDetalle(NCP, NCO, Acciones, AIdDetObservacion) {
 		var parameters = [NCP, NCO, Acciones],
-			IdEstadoDetObservacion = 12;
+			IdEstadoDetObservacion = 'DOBSPEN';
 		if (NCP > 0 && NCO > 0 && Acciones != '') {
-			IdEstadoDetObservacion = 13;
+			IdEstadoDetObservacion = 'DOBSACTIVO';
 			parameters.push(IdEstadoDetObservacion);
 		} else {
 			parameters.push(IdEstadoDetObservacion);
@@ -383,9 +399,8 @@ angular.module('app.services', [])
 				Name: username,
 				Password: password
 			}).success(function(data) {
-				if (recordar) {
-					$localstorage.setObject('UserPg', data);
-				}
+				$localstorage.setObject('UserPg', data);
+
 				me.isLogged = true;
 				deferred.resolve(data);
 			}).error(deferred.reject);
@@ -424,13 +439,13 @@ angular.module('app.services', [])
 })
 
 .factory('ObservacionesService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Dependencias/:id', {
+	return $resource(BASE_URL + '/api/Observaciones/:id', {
 		id: "@id"
 	});
 })
 
 .factory('DetObservacionesService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Dependencias/:id', {
+	return $resource(BASE_URL + '/api/DetObservaciones/:id', {
 		id: "@id"
 	});
 })

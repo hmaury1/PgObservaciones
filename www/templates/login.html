@@ -11,13 +11,13 @@
                     <span class="input-label">Usuario</span>
                     <input placeholder="" type="text" ng-model="data.alias" required autofocus>
                 </label>
-                <label class="item item-input" id="login-input2">
+                <label class="item item-input" id="login-input2"
                     <span class="input-label">Clave</span>
                     <input placeholder="" type="password" ng-model="data.password" required>
                 </label>
             </ion-list>
 
-            <ion-toggle ng-model="data.recordar" toggle-class="toggle-calm">Recordar</ion-toggle>
+            <ion-toggle ng-model="data.recordar" toggle-class="toggle-calm" style="display: none;">>Recordar</ion-toggle>
             <div class="spacer" style="width: 290px; height: 22px;"></div>
             <button type="submit" id="login-button1" class="button button-positive  button-block" ng-disabled="userForm.$invalid">Entrar</button>
         </form>
