@@ -7,13 +7,16 @@ angular.module('app.services', [])
 		parameters = parameters || [];
 		var q = $q.defer();
 
-		$cordovaSQLite.execute(db, query, parameters)
-			.then(function(result) {
-				q.resolve(result);
-			}, function(error) {
-				console.warn(error);
-				q.reject(error);
-			});
+		$ionicPlatform.ready(function() {
+			$cordovaSQLite.execute(db, query, parameters)
+				.then(function(result) {
+					q.resolve(result);
+				}, function(error) {
+					console.warn('DB error found');
+					console.warn(error);
+					q.reject(error);
+				});
+		});
 
 		return q.promise;
 	}

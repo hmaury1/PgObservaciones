@@ -46,7 +46,10 @@ angular.module('app', ['ionic', 'ngCordova', 'ngResource', 'ionic-datepicker', '
 		 */
 		if (window.cordova) {
 			// Dispositivo
-			db = $cordovaSQLite.openDB("my.db");
+			db = $cordovaSQLite.openDB({
+				name: "my.db",
+				location: 'default'
+			});
 		} else {
 			// Ionic serve
 			db = window.openDatabase("my.db", "1.0", "My app", -1);

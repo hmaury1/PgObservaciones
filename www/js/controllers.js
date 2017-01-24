@@ -22,7 +22,8 @@ angular.module('app.controllers', [])
 		ionicAuth.login($scope.data.alias, $scope.data.password, $scope.data.recordar).then(function(data) {
 			if (data.success) {
 				Lideres.getUser(data.id).then(function(result) {
-					if (result == null || result == '') {
+					console.log(result);
+					if (!result) {
 						var promise = LideresService.query().$promise;
 						promise.then(function(result33) {
 							Lideres.truncate();
@@ -80,7 +81,7 @@ angular.module('app.controllers', [])
 	};
 })
 
-.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones, Estandares, DetObservaciones) {
+.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones, Estandares, DetObservaciones, $cordovaDevice) {
 
 	$scope.data = {
 		empresaselected: null,
@@ -111,12 +112,16 @@ angular.module('app.controllers', [])
 	function init() {
 		Empresas.getAll().then(function(data) {
 			$scope.empresas = data;
-			$scope.data.empresa.IdEmpresa = $scope.empresas[0].IdEmpresa;
+			if (data.length > 0) {
+				$scope.data.empresa.IdEmpresa = $scope.empresas[0].IdEmpresa;
+			}
 		});
 
 		Empresas.getAll().then(function(data) {
 			$scope.empresascontra = data;
-			$scope.data.empresascontra.IdEmpresa = $scope.empresascontra[0].IdEmpresa;
+			if (data.length > 0) {
+				$scope.data.empresascontra.IdEmpresa = $scope.empresascontra[0].IdEmpresa;
+			}
 		});
 	}
 
@@ -144,7 +149,7 @@ angular.module('app.controllers', [])
 			IdEstadoObservacion: 'OBSEPEN',
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
 			IdObservRemoto: 'DOBSACTIVO',
-			PrefijoRemoto: '',
+			PrefijoRemoto: $cordovaDevice.getModel() + ' - ' + $cordovaDevice.getPlatform() + ' - ' + $cordovaDevice.getVersion(),
 			NombreUsuario: '',
 			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
 		};
@@ -183,7 +188,10 @@ angular.module('app.controllers', [])
 		})
 	};
 
-	init();
+	$scope.$on("$ionicView.enter", function() {
+		init();
+	});
+
 })
 
 .controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, $ionicPopup, DetObservaciones, Estandares, Observaciones) {

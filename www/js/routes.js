@@ -88,16 +88,6 @@ angular.module('app.routes', [])
 		}
 	})
 
-	.state('menu.parametros', {
-		url: '/parametros',
-		views: {
-			'side-content': {
-				templateUrl: 'templates/parametros.html',
-				controller: 'ParametrosCtrl'
-			}
-		}
-	})
-
 	.state('menu.configuracion', {
 		url: '/configuracion',
 		views: {
