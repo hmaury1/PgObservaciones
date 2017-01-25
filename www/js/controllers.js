@@ -154,8 +154,8 @@ angular.module('app.controllers', [])
 			IdEstadoObservacion: 'OBSEPEN',
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
 			IdObservRemoto: 'DOBSACTIVO',
-			//PrefijoRemoto: $cordovaDevice.getModel() + ' - ' + $cordovaDevice.getPlatform() + ' - ' + $cordovaDevice.getVersion(),
-			PrefijoRemoto: '',
+			PrefijoRemoto: $cordovaDevice.getModel() + ' - ' + $cordovaDevice.getPlatform() + ' - ' + $cordovaDevice.getVersion(),
+			//PrefijoRemoto: '',
 			NombreUsuario: '',
 			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
 		};
@@ -503,45 +503,58 @@ angular.module('app.controllers', [])
 	$scope.save = function() {
 		$ionicPopup.confirm({
 			title: 'Información',
-			template: 'Estas seguro de enviar la observación' + item.Lugar + '?'
+			template: 'Estas seguro de enviar las observaciones?'
 		}).then(function(res) {
 			if (res) {
 				var item = null;
+				var enviarLista = [];
+				var user = $localstorage.getObject('UserPg');
+				if (user == false) {
+					$ionicPopup.alert({
+						title: "Información",
+						content: 'Debe iniciar sesión para poder enviar las observaciones'
+					}).then(function() {
+						$state.go('login');
+					});
+					return;
+				}
 				for (var i = 0; i < $scope.items.length; i++) {
 					item = $scope.items[i];
-				}
-				Observaciones.get(item.IdObservacion).then(function(obs) {
-					var user = $localstorage.getObject('UserPg');
-
-					if (user == false) {
-						$ionicPopup.alert({
-							title: "Información",
-							content: 'Debe iniciar sesión para poder enviar las observaciones'
-						}).then(function() {
-							$state.go('login');
-						});
-						return;
-					}
-					$rootScope.$broadcast('loading:show');
-					Lideres.getUser(user.id).then(function(data) {
-						obs.IdLider = data.IdLider;
-						obs.NombreUsuario = user.username;
-						obs.movil = 1;
-						var entry = new ObservacionesService(); //You can instantiate resource class
-						entry = obs;
-						DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
-							entry.DetObservaciones = alldet;
-							/*ObservacionesService.save(entry, function(res) {
-								$rootScope.$broadcast('loading:hide');
-								if (res.IdObservacion) {
-									Observaciones.deleteById(item.IdObservacion);
-									DetObservaciones.deleteAllById(item.IdObservacion);
-									$scope.refresh();
-								}
-							});*/
+					Observaciones.get(item.IdObservacion).then(function(obs) {
+						$rootScope.$broadcast('loading:show');
+						Lideres.getUser(user.id).then(function(data) {
+							obs.IdLider = data.IdLider;
+							obs.NombreUsuario = user.username;
+							obs.movil = 1;
+							var entry = new ObservacionesService(); //You can instantiate resource class
+							entry = obs;
+							DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
+								entry.DetObservaciones = alldet;
+								enviarLista.push(entry);
+								ObservacionesService.save(entry, function(res) {
+									$rootScope.$broadcast('loading:hide');
+									if (res.IdObservacion) {
+										Observaciones.deleteById(item.IdObservacion);
+										DetObservaciones.deleteAllById(item.IdObservacion);
+										$scope.refresh();
+									}
+								});
+							});
 						});
 					});
-				});
+				}
+				/*console.log(enviarLista);
+				ObservacionesService.save(enviarLista, function(res) {
+					$rootScope.$broadcast('loading:hide');
+					if (res.IdObservacion) {
+						Observaciones.deleteById(item.IdObservacion);
+						DetObservaciones.deleteAllById(item.IdObservacion);
+						$scope.refresh();
+					}
+				}, function(argument) {
+					$rootScope.$broadcast('loading:hide');
+				});*/
+
 			}
 		});
 	};
