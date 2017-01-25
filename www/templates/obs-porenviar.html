@@ -10,9 +10,10 @@
 		    <div class="item-icon-right">
 		        <i class="icon ion-ios-arrow-right"></i>
 		    </div>
-	     	<ion-option-button class="button-positive" ng-click="save(item)" ng-show="isLogged">Enviar</ion-option-button>
 		    <ion-option-button class="button-assertive" ng-click="deleteObs($index,item)">Eliminar</ion-option-button>
 		</ion-item>
 	</ion-list>
   </ion-content>
+  <fab-button-right target-id="content" css-class="app-fab-btn" ng-show="isLogged" ng-click="save()">
+        <i class="icon ion ion-paper-airplane"></i>
 </ion-view>

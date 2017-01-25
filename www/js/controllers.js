@@ -154,8 +154,8 @@ angular.module('app.controllers', [])
 			IdEstadoObservacion: 'OBSEPEN',
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
 			IdObservRemoto: 'DOBSACTIVO',
-			PrefijoRemoto: $cordovaDevice.getModel() + ' - ' + $cordovaDevice.getPlatform() + ' - ' + $cordovaDevice.getVersion(),
-			//PrefijoRemoto: '',
+			//PrefijoRemoto: $cordovaDevice.getModel() + ' - ' + $cordovaDevice.getPlatform() + ' - ' + $cordovaDevice.getVersion(),
+			PrefijoRemoto: '',
 			NombreUsuario: '',
 			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
 		};
@@ -178,8 +178,6 @@ angular.module('app.controllers', [])
 					DetObservaciones.add({
 						IdObservacion: result.insertId,
 						IdEstandar: data[i].IdEstandar,
-						NumCompPositivos: 0,
-						NumCompObservados: 0,
 						Acciones: '',
 						IdEstadoDetObservacion: 'DOBSPEN',
 						IdDetObservRemoto: 'DOBSACTIVO',
@@ -335,7 +333,13 @@ angular.module('app.controllers', [])
 
 	function validar_para_acciones() {
 		//las acciones solo son obligatorias si las positivas son diferentes a las observadas.
-		return ($scope.data.ncp != $scope.data.nco ? true : false);
+		console.log($scope.data.ncp, $scope.data.nco);
+		if (($scope.data.ncp == 0 || $scope.data.ncp == null) && $scope.data.nco > 0) {
+			console.log('barro');
+			return false;
+		} else {
+			return ($scope.data.ncp != $scope.data.nco ? true : false);
+		}
 	}
 
 	function validar_text_10() {
@@ -395,7 +399,7 @@ angular.module('app.controllers', [])
 					IdEstandar: data[i].IdEstandar
 				});
 			}
-
+			console.log(forms);
 			loadForm();
 			loadEstandar();
 		});
@@ -413,7 +417,7 @@ angular.module('app.controllers', [])
 
 })
 
-.controller('ObsPendientesCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, $timeout, $ionicNavBarDelegate) {
+.controller('ObsPendientesCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, $timeout, $ionicNavBarDelegate, $ionicPopup) {
 
 	var count = 0;
 	$scope.items = [];
@@ -496,13 +500,16 @@ angular.module('app.controllers', [])
 		});
 	};
 
-	$scope.save = function(item) {
-
+	$scope.save = function() {
 		$ionicPopup.confirm({
 			title: 'Información',
-			template: 'Estas seguro de enivar la observación' + item.Lugar + '?'
+			template: 'Estas seguro de enviar la observación' + item.Lugar + '?'
 		}).then(function(res) {
 			if (res) {
+				var item = null;
+				for (var i = 0; i < $scope.items.length; i++) {
+					item = $scope.items[i];
+				}
 				Observaciones.get(item.IdObservacion).then(function(obs) {
 					var user = $localstorage.getObject('UserPg');
 
@@ -524,14 +531,14 @@ angular.module('app.controllers', [])
 						entry = obs;
 						DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
 							entry.DetObservaciones = alldet;
-							ObservacionesService.save(entry, function(res) {
+							/*ObservacionesService.save(entry, function(res) {
 								$rootScope.$broadcast('loading:hide');
 								if (res.IdObservacion) {
 									Observaciones.deleteById(item.IdObservacion);
 									DetObservaciones.deleteAllById(item.IdObservacion);
 									$scope.refresh();
 								}
-							});
+							});*/
 						});
 					});
 				});

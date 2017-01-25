@@ -242,14 +242,12 @@ angular.module('app.services', [])
 		var parameters = [
 			obj.IdObservacion,
 			obj.IdEstandar,
-			obj.NumCompPositivos,
-			obj.NumCompObservados,
 			obj.Acciones,
 			obj.IdEstadoDetObservacion,
 			obj.IdDetObservRemoto,
 			obj.PrefijoRemoto
 		];
-		return DBA.query("INSERT INTO DetObservaciones (IdObservacion,IdEstandar,NumCompPositivos,NumCompObservados,Acciones,IdEstadoDetObservacion,IdDetObservRemoto,PrefijoRemoto) VALUES (?,?,?,?,?,?,?,?)", parameters);
+		return DBA.query("INSERT INTO DetObservaciones (IdObservacion,IdEstandar,NumCompPositivos,NumCompObservados,Acciones,IdEstadoDetObservacion,IdDetObservRemoto,PrefijoRemoto) VALUES (?,?,NULL,NULL,?,?,?,?)", parameters);
 	}
 
 	function getByIdObservacion(key) {
@@ -263,7 +261,7 @@ angular.module('app.services', [])
 	function updateDetalle(NCP, NCO, Acciones, AIdDetObservacion) {
 		var parameters = [NCP, NCO, Acciones],
 			IdEstadoDetObservacion = 'DOBSPEN';
-		if (NCP > 0 && NCO > 0) {
+		if (NCO >= 0) {
 			IdEstadoDetObservacion = 'DOBSACTIVO';
 			parameters.push(IdEstadoDetObservacion);
 		} else {
