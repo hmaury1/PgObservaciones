@@ -157,7 +157,7 @@ angular.module('app.services', [])
 	}
 
 	function getAllDetPent() {
-		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 'OBSEPEN' GROUP BY obs.IdObservacion").then(function(result) {
+		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 'DOBSPEN' GROUP BY obs.IdObservacion").then(function(result) {
 			return DBA.getAll(result);
 		});
 	}
@@ -263,7 +263,7 @@ angular.module('app.services', [])
 	function updateDetalle(NCP, NCO, Acciones, AIdDetObservacion) {
 		var parameters = [NCP, NCO, Acciones],
 			IdEstadoDetObservacion = 'DOBSPEN';
-		if (NCP > 0 && NCO > 0 && Acciones != '') {
+		if (NCP > 0 && NCO > 0) {
 			IdEstadoDetObservacion = 'DOBSACTIVO';
 			parameters.push(IdEstadoDetObservacion);
 		} else {
@@ -274,11 +274,16 @@ angular.module('app.services', [])
 		return DBA.query("UPDATE DetObservaciones SET NumCompPositivos = (?), NumCompObservados = (?), Acciones = (?), IdEstadoDetObservacion = (?) WHERE IdDetObservacion = (?)", parameters);
 	}
 
+	function deleteAllById(key) {
+		return DBA.query("DELETE FROM DetObservaciones WHERE IdObservacion = (?)", [key]);
+	}
+
 	return {
 		getAll: getAll,
 		add: add,
 		getByIdObservacion: getByIdObservacion,
-		updateDetalle: updateDetalle
+		updateDetalle: updateDetalle,
+		deleteAllById: deleteAllById
 	}
 })
 
@@ -402,6 +407,7 @@ angular.module('app.services', [])
 				Name: username,
 				Password: password
 			}).success(function(data) {
+				data.username = username;
 				$localstorage.setObject('UserPg', data);
 
 				me.isLogged = true;
@@ -415,6 +421,10 @@ angular.module('app.services', [])
 		},
 		isAuthenticated: function() {
 			return $localstorage.getObject('UserPg');
+		},
+		getUserName: function() {
+			var data = $localstorage.getObject('UserPg');
+			return data.username;
 		}
 	};
 }])

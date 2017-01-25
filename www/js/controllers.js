@@ -10,9 +10,6 @@ angular.module('app.controllers', [])
 
 	$scope.error = '';
 	if (ionicAuth.isAuthenticated()) {
-		// Make sure the user data is going to be loaded
-		//$ionicUser.load().then(function() {});
-		//MERCADOID.id = $localstorage.get('recors');
 		$state.go('menu.crearobservacion');
 	}
 
@@ -22,7 +19,6 @@ angular.module('app.controllers', [])
 		ionicAuth.login($scope.data.alias, $scope.data.password, $scope.data.recordar).then(function(data) {
 			if (data.success) {
 				Lideres.getUser(data.id).then(function(result) {
-					console.log(result);
 					if (!result) {
 						var promise = LideresService.query().$promise;
 						promise.then(function(result33) {
@@ -58,6 +54,12 @@ angular.module('app.controllers', [])
 						$state.go('menu.crearobservacion');
 					}
 				});
+			} else {
+				$rootScope.$broadcast('loading:hide');
+				$ionicPopup.alert({
+					title: "Información",
+					content: 'Usuario o Clave incorrectos'
+				});
 			}
 		}, function(error) {
 			$scope.error = error.message;
@@ -67,6 +69,7 @@ angular.module('app.controllers', [])
 
 .controller('MenuCtrl', function($scope, ionicAuth, $ionicSideMenuDelegate, $state) {
 	$scope.isLogged = false;
+	$scope.username = ionicAuth.getUserName();
 	$scope.$on("$ionicView.enter", function() {
 		$scope.isLogged = ionicAuth.isAuthenticated();
 
@@ -75,13 +78,15 @@ angular.module('app.controllers', [])
 
 	$scope.cerrarSession = function() {
 		ionicAuth.logout();
+		$scope.username = '';
 		$scope.isLogged = false;
 		$ionicSideMenuDelegate.toggleLeft();
 		$state.go('menu.crearobservacion');
 	};
 })
 
-.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas, Observaciones, Estandares, DetObservaciones, $cordovaDevice) {
+.controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas,
+	Observaciones, Estandares, DetObservaciones, $cordovaDevice, $timeout, $ionicNavBarDelegate) {
 
 	$scope.data = {
 		empresaselected: null,
@@ -150,6 +155,7 @@ angular.module('app.controllers', [])
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
 			IdObservRemoto: 'DOBSACTIVO',
 			PrefijoRemoto: $cordovaDevice.getModel() + ' - ' + $cordovaDevice.getPlatform() + ' - ' + $cordovaDevice.getVersion(),
+			//PrefijoRemoto: '',
 			NombreUsuario: '',
 			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
 		};
@@ -192,9 +198,16 @@ angular.module('app.controllers', [])
 		init();
 	});
 
+	$scope.$on('$ionicView.afterEnter', function(event, viewData) {
+		$timeout(function() {
+			$ionicNavBarDelegate.align('center');
+		}, 100);
+	});
+
 })
 
-.controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, $ionicPopup, DetObservaciones, Estandares, Observaciones) {
+.controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, $ionicPopup, DetObservaciones,
+	Estandares, Observaciones, $timeout, $ionicNavBarDelegate) {
 	/**
 	 * id de la observacion
 	 * @type {Number}
@@ -241,19 +254,22 @@ angular.module('app.controllers', [])
 			return;
 		}
 
+		if (validar_para_acciones()) {
+			if (!validar_text_10()) {
+				$ionicPopup.alert({
+					title: "Información",
+					content: 'Las acciones deben tener mas de 10 caracteres'
+				});
+				return;
+			}
+		}
+
 		$scope.indiceEstandar++;
 		if ($scope.textoBoton == 'Guardar') {
 
 			updateDet(function() {
-				//Observaciones.updateStatus(id_observacion).then(function() {
-				$ionicHistory.nextViewOptions({
-					disableBack: true
-				});
-				$state.go('menu.crearobservacion', {}, {
-					location: "replace",
-					reload: true
-				});
-				//});
+				$state.go('menu.crearobservacion');
+				location.reload();
 			});
 
 		} else {
@@ -284,6 +300,15 @@ angular.module('app.controllers', [])
 			});
 			return;
 		}
+		if (validar_para_acciones()) {
+			if (!validar_text_10()) {
+				$ionicPopup.alert({
+					title: "Información",
+					content: 'Las acciones deben tener mas de 10 caracteres'
+				});
+				return;
+			}
+		}
 		$scope.textoBoton = 'Continuar';
 		$scope.indiceEstandar--;
 		updateDet(function() {
@@ -302,9 +327,19 @@ angular.module('app.controllers', [])
 		});
 
 	};
+
 	//Los comportamiento positivos tienes que ser menor o igual a los observados nunca mayor
 	function validar() {
-		return ($scope.data.nco > $scope.data.ncp ? false : true);
+		return ($scope.data.ncp > $scope.data.nco ? false : true);
+	}
+
+	function validar_para_acciones() {
+		//las acciones solo son obligatorias si las positivas son diferentes a las observadas.
+		return ($scope.data.ncp != $scope.data.nco ? true : false);
+	}
+
+	function validar_text_10() {
+		return ($scope.data.acciones.length < 10 ? false : true);
 	}
 
 	/**
@@ -354,8 +389,8 @@ angular.module('app.controllers', [])
 			for (var i = 0; i < data.length; i++) {
 				forms.push({
 					acciones: data[i].Acciones,
-					ncp: data[i].NumCompObservados,
-					nco: data[i].NumCompPositivos,
+					nco: data[i].NumCompObservados,
+					ncp: data[i].NumCompPositivos,
 					IdDetObservacion: data[i].IdDetObservacion,
 					IdEstandar: data[i].IdEstandar
 				});
@@ -370,9 +405,15 @@ angular.module('app.controllers', [])
 		init();
 	});
 
+	$scope.$on('$ionicView.afterEnter', function(event, viewData) {
+		$timeout(function() {
+			$ionicNavBarDelegate.align('center');
+		}, 100);
+	});
+
 })
 
-.controller('ObsPendientesCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones) {
+.controller('ObsPendientesCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, $timeout, $ionicNavBarDelegate) {
 
 	var count = 0;
 	$scope.items = [];
@@ -385,34 +426,51 @@ angular.module('app.controllers', [])
 	$scope.openDets = function(item) {
 		$state.go('menu.det-observacion', {
 			id_observacion: item.IdObservacion
+		});
+	};
+
+	$scope.deleteObs = function(index, item) {
+		$ionicPopup.confirm({
+			title: 'Información',
+			template: 'Estas seguro de eliminar la observación' + item.Lugar + '?'
+		}).then(function(res) {
+			if (res) {
+				Observaciones.deleteById(item.IdObservacion);
+				DetObservaciones.deleteAllById(item.IdObservacion);
+				$scope.items.splice(index, 1);
+			}
 		});
 	};
 
 	function init() {
 		$scope.items = [];
 		$rootScope.$broadcast('loading:show');
-		Estandares.getAll().then(function(data1) {
-			count = data1.length;
-			Observaciones.getAllDetPent().then(function(data) {
-				for (var i = 0; i < data.length; i++) {
-					if (data[i].registros < count) {
-						$scope.items.push(data[i]);
-					} else {
-						Observaciones.updateStatus(data[i].IdObservacion);
-					}
+		Observaciones.getAllDetPent().then(function(data) {
+			for (var i = 0; i < data.length; i++) {
+				if (data[i].registros > 0) {
+					$scope.items.push(data[i]);
+				} else {
+					Observaciones.updateStatus(data[i].IdObservacion);
 				}
-				$rootScope.$broadcast('loading:hide');
-			});
+			}
+			$rootScope.$broadcast('loading:hide');
 		});
 	}
 	$scope.$on('$ionicView.enter', function(e) {
 		init();
 	});
+	$scope.$on('$ionicView.afterEnter', function(event, viewData) {
+		$timeout(function() {
+			$ionicNavBarDelegate.align('center');
+		}, 100);
+	})
 })
 
-.controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, ObservacionesService, Lideres, $localstorage, $ionicPopup) {
+.controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones,
+	ObservacionesService, Lideres, $localstorage, $ionicPopup, ionicAuth, $timeout, $ionicNavBarDelegate) {
 	var count = 0;
 	$scope.items = [];
+	$scope.isLogged = false;
 
 	$scope.refresh = function() {
 		$scope.items = [];
@@ -425,40 +483,60 @@ angular.module('app.controllers', [])
 		});
 	};
 
+	$scope.deleteObs = function(index, item) {
+		$ionicPopup.confirm({
+			title: 'Información',
+			template: 'Estas seguro de eliminar la observación' + item.Lugar + '?'
+		}).then(function(res) {
+			if (res) {
+				Observaciones.deleteById(item.IdObservacion);
+				DetObservaciones.deleteAllById(item.IdObservacion);
+				$scope.items.splice(index, 1);
+			}
+		});
+	};
+
 	$scope.save = function(item) {
 
-		Observaciones.get(item.IdObservacion).then(function(obs) {
-			var user = $localstorage.getObject('UserPg');
+		$ionicPopup.confirm({
+			title: 'Información',
+			template: 'Estas seguro de enivar la observación' + item.Lugar + '?'
+		}).then(function(res) {
+			if (res) {
+				Observaciones.get(item.IdObservacion).then(function(obs) {
+					var user = $localstorage.getObject('UserPg');
 
-			if (user == false) {
-				$ionicPopup.alert({
-					title: "Información",
-					content: 'Debe iniciar sesión para poder enviar las observaciones'
-				}).then(function() {
-					$state.go('login');
-				});
-				return;
-			}
-			$rootScope.$broadcast('loading:show');
-			Lideres.getUser(user.id).then(function(data) {
-				obs.IdLider = data.IdLider;
-				obs.NombreUsuario = data.Nombre;
-				obs.movil = 1;
-				var entry = new ObservacionesService(); //You can instantiate resource class
-				entry = obs;
-				DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
-					entry.DetObservaciones = alldet;
-					ObservacionesService.save(entry, function(res) {
-						$rootScope.$broadcast('loading:hide');
-						if (res.IdObservacion) {
-							Observaciones.deleteById(item.IdObservacion);
-							$scope.refresh();
-						}
+					if (user == false) {
+						$ionicPopup.alert({
+							title: "Información",
+							content: 'Debe iniciar sesión para poder enviar las observaciones'
+						}).then(function() {
+							$state.go('login');
+						});
+						return;
+					}
+					$rootScope.$broadcast('loading:show');
+					Lideres.getUser(user.id).then(function(data) {
+						obs.IdLider = data.IdLider;
+						obs.NombreUsuario = user.username;
+						obs.movil = 1;
+						var entry = new ObservacionesService(); //You can instantiate resource class
+						entry = obs;
+						DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
+							entry.DetObservaciones = alldet;
+							ObservacionesService.save(entry, function(res) {
+								$rootScope.$broadcast('loading:hide');
+								if (res.IdObservacion) {
+									Observaciones.deleteById(item.IdObservacion);
+									DetObservaciones.deleteAllById(item.IdObservacion);
+									$scope.refresh();
+								}
+							});
+						});
 					});
 				});
-			});
+			}
 		});
-
 	};
 
 	function init() {
@@ -478,16 +556,18 @@ angular.module('app.controllers', [])
 		});
 	}
 	$scope.$on('$ionicView.enter', function(e) {
+		$scope.isLogged = ionicAuth.isAuthenticated();
 		init();
+	});
+	$scope.$on('$ionicView.afterEnter', function(event, viewData) {
+		$timeout(function() {
+			$ionicNavBarDelegate.align('center');
+		}, 100);
 	});
 })
 
-.controller('ParametrosCtrl', function($scope) {
-
-})
-
 .controller('ConfiguracionCtrl', function($rootScope, $scope, $ionicPopup, $cordovaNetwork, Empresas, EmpresasService, Lideres, LideresService,
-	Parametros, ParametrosService, ValorParametros, ValorParametrosService, Estandares, EstandaresService) {
+	Parametros, ParametrosService, ValorParametros, ValorParametrosService, Estandares, EstandaresService, $timeout, $ionicNavBarDelegate) {
 
 	var promise = null;
 
@@ -608,5 +688,11 @@ angular.module('app.controllers', [])
 	};
 
 	init();
+
+	$scope.$on('$ionicView.afterEnter', function(event, viewData) {
+		$timeout(function() {
+			$ionicNavBarDelegate.align('center');
+		}, 100);
+	});
 
 });

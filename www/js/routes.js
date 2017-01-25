@@ -1,6 +1,6 @@
 angular.module('app.routes', [])
 
-.config(function($stateProvider, $httpProvider, $urlRouterProvider, ionicDatePickerProvider) {
+.config(function($stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, ionicDatePickerProvider) {
 
 	/*$httpProvider.interceptors.push(function($rootScope, $q) {
 		return {
@@ -18,7 +18,7 @@ angular.module('app.routes', [])
 			}
 		}
 	});*/
-
+	$ionicConfigProvider.navBar.alignTitle('center');
 	//$httpProvider.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
 	//$httpProvider.defaults.useXDomain = true;
 	//delete $httpProvider.defaults.headers.common['X-Requested-With'];

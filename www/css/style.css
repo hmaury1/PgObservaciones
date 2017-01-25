@@ -17,3 +17,9 @@ ion-list.manual-list-fullwidth div.list > .item, .list.card.manual-card-fullwidt
 	border-left:0px;
 	border-right: 0px;
 }
+
+.title {
+  transition-duration: 0ms !important;
+  transform: translate3d(0px, 0px, 0px) !important;
+  text-align: center !important;
+}

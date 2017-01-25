@@ -1,4 +1,4 @@
-<ion-side-menus enable-menu-with-back-views="false">
+<ion-side-menus enable-menu-with-back-views="true">
   <ion-side-menu-content>
     <ion-nav-bar class="bar-positive">
       <ion-nav-back-button></ion-nav-back-button>
@@ -11,7 +11,7 @@
   <ion-side-menu side="left" id="side-content">
     <ion-content padding="true" style="top:0px !important;" class="side-menu-left side-menu-gradient">
       <h3 id="menu-heading1" style="color:#FFFFFF;font-weight:300;text-align:center;">Bienvenido</h3>
-      <h2 style="color:#FFFFFF;font-weight:300;text-align:center;">Humberto Maury</h2>
+      <h2 style="color:#FFFFFF;font-weight:300;text-align:center;"><b>{{ username }}</b></h2>
       <div class="spacer" style="width: 251px; height: 24px;"></div>
       <ion-list id="menu-list3" class="manual-list-fullwidth">
         <ion-item active-page-highlight class="item-icon-left  side-menu-item" ui-sref="menu.crearobservacion" menu-close="">
