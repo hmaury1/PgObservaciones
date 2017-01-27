@@ -2,26 +2,8 @@ angular.module('app.routes', [])
 
 .config(function($stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, ionicDatePickerProvider) {
 
-	/*$httpProvider.interceptors.push(function($rootScope, $q) {
-		return {
-			request: function(config) {
-				$rootScope.$broadcast('loading:show');
-				return config
-			},
-			response: function(response) {
-				$rootScope.$broadcast('loading:hide');
-				return response
-			},
-			responseError: function(rejection) {
-				$rootScope.$broadcast('loading:hide');
-				return $q.reject(rejection);
-			}
-		}
-	});*/
 	$ionicConfigProvider.navBar.alignTitle('center');
-	//$httpProvider.defaults.headers.common['Access-Control-Allow-Origin'] = '*';
-	//$httpProvider.defaults.useXDomain = true;
-	//delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
 	var datePickerObj = {
 		inputDate: new Date(),
 		setLabel: 'Elegir',
@@ -31,8 +13,6 @@ angular.module('app.routes', [])
 		weeksList: ["D", "L", "M", "M", "J", "V", "S"],
 		monthsList: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
 		templateType: 'popup',
-		//from: new Date(2017, 1, 1),
-		//to: new Date(2020, 8, 1),
 		showTodayButton: true,
 		dateFormat: 'yyyy-MM-dd',
 		closeOnSelect: true,

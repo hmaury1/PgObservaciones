@@ -48,52 +48,6 @@ angular.module('app.services', [])
 
 })
 
-.factory('Chats', function($q, $cordovaSQLite) {
-
-	return {
-		all: function() {
-			var q = $q.defer();
-			var chats = [];
-			var query = "SELECT name, lasttext FROM people";
-			$cordovaSQLite.execute(db, query, []).then(function(res) {
-				if (res.rows.length > 0) {
-					q.resolve(res.rows);
-				} else {
-					console.log("No results found");
-				}
-			}, function(err) {
-				console.error(err);
-			});
-			return q.promise;
-		},
-		remove: function(chat) {
-			chats.splice(chats.indexOf(chat), 1);
-		},
-		get: function(chatId) {
-			var chats = [];
-			var query = "SELECT name, lasttext FROM people";
-			return $cordovaSQLite.execute(db, query, []).then(function(res) {
-				if (res.rows.length > 0) {
-					return res.rows;
-				} else {
-					console.log("No results found");
-				}
-			}, function(err) {
-				console.error(err);
-			});
-
-		},
-		save: function(name, lasttext) {
-			var query = "INSERT INTO people (name, lasttext) VALUES (?,?)";
-			$cordovaSQLite.execute(db, query, [name, lasttext]).then(function(res) {
-				console.log("INSERT ID -> " + res.insertId);
-			}, function(err) {
-				console.error(err);
-			});
-		}
-	};
-})
-
 .factory('Empresas', function($q, DBA) {
 
 	function getAll() {
@@ -401,7 +355,7 @@ angular.module('app.services', [])
 		login: function(username, password, recordar) {
 			var deferred = $q.defer();
 			var me = this;
-			$http.post(BASE_URL + '/api/Login', {
+			$http.post(localStorage.getItem('configuraciones') + '/api/Login', {
 				Name: username,
 				Password: password
 			}).success(function(data) {
@@ -432,25 +386,25 @@ angular.module('app.services', [])
  *
  */
 .factory('EmpresasService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Empresas/:id', {
+	return $resource(BASE_URL.url + '/api/Empresas/:id', {
 		id: "@id"
 	});
 })
 
 .factory('LideresService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Lideres/:id', {
+	return $resource(BASE_URL.url + '/api/Lideres/:id', {
 		id: "@id"
 	});
 })
 
 .factory('DependenciasService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Dependencias/:id', {
+	return $resource(BASE_URL.url + '/api/Dependencias/:id', {
 		id: "@id"
 	});
 })
 
 .factory('ObservacionesService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Observaciones/:id', {
+	return $resource(BASE_URL.url + '/api/Observaciones/:id', {
 		id: "@id"
 	});
 })
@@ -462,19 +416,19 @@ angular.module('app.services', [])
 })
 
 .factory('ValorParametrosService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/ValorParametros/:id', {
+	return $resource(BASE_URL.url + '/api/ValorParametros/:id', {
 		id: "@id"
 	});
 })
 
 .factory('ParametrosService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Parametros/:id', {
+	return $resource(BASE_URL.url + '/api/Parametros/:id', {
 		id: "@id"
 	});
 })
 
 .factory('EstandaresService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/Estandares/:id', {
+	return $resource(BASE_URL.url + '/api/Estandares/:id', {
 		id: "@id"
 	});
 });

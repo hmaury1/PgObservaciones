@@ -13,9 +13,11 @@ var db = null;
 
 angular.module('app', ['ionic', 'ngCordova', 'ngResource', 'ionic-datepicker', 'ion-fab-button', 'app.controllers', 'app.routes', 'app.directives', 'app.services'])
 
-.value('BASE_URL', 'http://181.49.194.242:8020/PgObservacionesApi')
+.value('BASE_URL', {
+	url: 'http://181.49.194.242:8020/PgObservacionesApi'
+})
 
-.run(function($rootScope, $ionicPlatform, $ionicLoading, $ionicPopup, $cordovaSQLite) {
+.run(function($rootScope, $ionicPlatform, $ionicLoading, $ionicPopup, $cordovaSQLite, BASE_URL) {
 
 	$rootScope.$on('loading:show', function() {
 		$ionicLoading.show({
@@ -55,7 +57,6 @@ angular.module('app', ['ionic', 'ngCordova', 'ngResource', 'ionic-datepicker', '
 			db = window.openDatabase("my.db", "1.0", "My app", -1);
 		}
 
-		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS people (id integer primary key, name text, lasttext text)"); //tabla de ejemplo se elminara despues
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Empresas (IdEmpresa integer primary key, RazonSocial text, IdTipoEmpresa text, IdEstadoEmpresa text)");
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Dependencias(IdDependencia integer primary key,NombreDependencia text,IdEstadoDependencia text,IdEmpresa integer,FOREIGN KEY(IdEmpresa) REFERENCES Empresas(IdEmpresa))");
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Lideres(IdLider integer primary key,IdEmpresa integer,IdDependencia integer,IdUsuario integer,Nombre text,IdEstadoLider text,Usuario text,FOREIGN KEY(IdDependencia) REFERENCES Dependencias(IdDependencia),FOREIGN KEY(IdEmpresa) REFERENCES Empresas(IdEmpresa))");
@@ -64,6 +65,12 @@ angular.module('app', ['ionic', 'ngCordova', 'ngResource', 'ionic-datepicker', '
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS DetObservaciones(IdDetObservacion integer primary key,IdObservacion integer,IdEstandar integer,NumCompPositivos integer,NumCompObservados integer,Acciones text,IdEstadoDetObservacion text,IdDetObservRemoto text,PrefijoRemoto text,FOREIGN KEY(IdEstandar) REFERENCES Estandares(IdEstandar),FOREIGN KEY(IdObservacion) REFERENCES Observaciones(IdObservacion))");
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Parametros(IdParametro integer primary key,CodParametro text,Atributo text,Descripcion text,EstadoParametro text)");
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS ValorParametros(IdValorParametro integer primary key,IdParametro integer,CodValorParametro text,CodParametro text,Valor text,Orden text,EstadoValorParametro text,FOREIGN KEY(IdParametro) REFERENCES Parametros(IdParametro))");
+
+		if (localStorage.getItem('configuraciones') == undefined) {
+			localStorage.setItem('configuraciones', BASE_URL.url);
+		}
+
+		BASE_URL.url = localStorage.getItem('configuraciones');
 
 	});
 });

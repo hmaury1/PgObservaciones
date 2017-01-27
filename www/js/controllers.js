@@ -587,10 +587,12 @@ angular.module('app.controllers', [])
 })
 
 .controller('ConfiguracionCtrl', function($rootScope, $scope, $ionicPopup, $cordovaNetwork, Empresas, EmpresasService, Lideres, LideresService,
-	Parametros, ParametrosService, ValorParametros, ValorParametrosService, Estandares, EstandaresService, $timeout, $ionicNavBarDelegate) {
+	Parametros, ParametrosService, ValorParametros, ValorParametrosService, Estandares, EstandaresService, $timeout, $ionicNavBarDelegate, BASE_URL) {
 
 	var promise = null;
-
+	$scope.data = {
+		url: ''
+	};
 	$scope.enableSync = false;
 
 	function cargarEmpresas() {
@@ -606,6 +608,12 @@ angular.module('app.controllers', [])
 				});
 			}
 			cargarLideres();
+		}, function(result) {
+			$rootScope.$broadcast('loading:hide');
+			$ionicPopup.alert({
+				title: "Información",
+				content: "Url no encontrada, por favor verifique si esta correcta"
+			});
 		});
 	}
 
@@ -706,6 +714,26 @@ angular.module('app.controllers', [])
 		$rootScope.$broadcast('loading:show');
 		cargarEmpresas();
 	};
+
+	$scope.guardar = function() {
+		$rootScope.$broadcast('loading:show');
+		BASE_URL.url = $scope.data.url;
+		localStorage.setItem('configuraciones', $scope.data.url);
+		$rootScope.$broadcast('loading:hide');
+		$ionicPopup.alert({
+			title: "Actualización",
+			content: "Url del servidor actualizada con exito"
+		}).then(function() {
+			window.location.reload();
+		});
+	};
+
+	$scope.$on('$ionicView.enter', function(e) {
+		init();
+		$scope.data = {
+			url: localStorage.getItem('configuraciones')
+		};
+	});
 
 	init();
 

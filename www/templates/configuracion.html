@@ -1,9 +1,25 @@
 <ion-view view-title="Configuración">
-	<ion-content has-header="true" padding="true">
-	   	<ion-list>
-	   		<ion-item>
-	   			<button class="button button-positive button-block" ng-click="sincronizar()" ng-disabled="enableSync">Sincronizar</button>
-	   		</ion-item>
-	   	</ion-list>
-	</ion-content>
+    <ion-content has-header="true" padding="true">
+        <ion-list>
+        	<div class="item item-divider">
+		    	Actualiza los datos locales
+		  	</div>
+            <ion-item>
+                <button class="button button-positive button-block" ng-click="sincronizar()" ng-disabled="enableSync">Sincronizar</button>
+            </ion-item>
+        </ion-list>
+        <br />
+        <form name="urlForm" class="list" ng-submit="guardar()">
+            <div class="list">
+            <div class="item item-divider">
+		    	Actualiza el servidor para la sincronización
+		  	</div>
+                <label class="item item-input item-floating-label">
+                    <span class="input-label">Url Servidor</span>
+                    <input type="text" placeholder="Url Servidor" ng-model="data.url" required>
+                </label>
+            </div>
+            <button type="submit" class="button button-positive  button-block" ng-disabled="urlForm.$invalid">Guardar</button>
+        </form>
+    </ion-content>
 </ion-view>
