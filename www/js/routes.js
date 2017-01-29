@@ -82,8 +82,8 @@ angular.module('app.routes', [])
 		url: '/login',
 		templateUrl: 'templates/login.html',
 		controller: 'LoginCtrl'
-	})
+	});
 
-	$urlRouterProvider.otherwise('/side-content/crearobservacion')
+	$urlRouterProvider.otherwise('/side-content/crearobservacion');
 
 });

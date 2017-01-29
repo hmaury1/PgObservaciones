@@ -5,7 +5,7 @@ angular.module('app.directives', [])
 	return function($scope, $element, $attr) {
 
 		function checkUISref() {
-			if ($state.is($attr['uiSref'])) {
+			if ($state.is($attr.uiSref)) {
 				$element.addClass('active-page-highlight');
 			} else {
 				$element.removeClass('active-page-highlight');
@@ -16,7 +16,7 @@ angular.module('app.directives', [])
 
 		$rootScope.$on('$stateChangeSuccess', function() {
 			checkUISref();
-		})
+		});
 	};
 
 }]);
