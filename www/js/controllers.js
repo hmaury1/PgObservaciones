@@ -1,12 +1,18 @@
+/*jshint loopfunc: true */
+
 angular.module('app.controllers', [])
 
-.controller('LoginCtrl', function($rootScope, $scope, $state, ionicAuth, Lideres, $ionicPopup, LideresService) {
-
+.controller('LoginCtrl', function($rootScope, $scope, $state, ionicAuth, Lideres, $ionicPopup, LideresService, $cordovaDevice) {
+	var uuid = '';
 	$scope.data = {
 		'alias': '',
 		'password': '',
 		'recordar': true
 	};
+
+	document.addEventListener("deviceready", function() {
+		uuid = $cordovaDevice.getUUID();
+	}, false);
 
 	$scope.error = '';
 	if (ionicAuth.isAuthenticated()) {
@@ -16,7 +22,7 @@ angular.module('app.controllers', [])
 	$scope.login = function() {
 		$scope.error = '';
 		$rootScope.$broadcast('loading:show');
-		ionicAuth.login($scope.data.alias, $scope.data.password, $scope.data.recordar).then(function(data) {
+		ionicAuth.login($scope.data.alias, $scope.data.password, $scope.data.recordar, uuid).then(function(data) {
 			if (data.success) {
 				Lideres.getUser(data.id).then(function(result) {
 					if (!result) {
@@ -35,7 +41,7 @@ angular.module('app.controllers', [])
 								});
 							}
 							Lideres.getUser(data.id).then(function(result2) {
-								if (result2 == null) {
+								if (result2 === null) {
 									$rootScope.$broadcast('loading:hide');
 									$ionicPopup.alert({
 										title: "Información",
@@ -58,23 +64,39 @@ angular.module('app.controllers', [])
 				$rootScope.$broadcast('loading:hide');
 				$ionicPopup.alert({
 					title: "Información",
-					content: 'Usuario o Clave incorrectos'
+					content: 'Usuario y/o Clave incorrectos, o el uuid no esta registrado por favor contactar con el administrador'
 				});
 			}
 		}, function(error) {
+			$rootScope.$broadcast('loading:hide');
 			$scope.error = error.message;
-		})
+		});
 	};
 })
 
-.controller('MenuCtrl', function($scope, ionicAuth, $ionicSideMenuDelegate, $state) {
+.controller('MenuCtrl', function($scope, ionicAuth, $ionicSideMenuDelegate, $state, $cordovaDevice, $ionicPopup, $cordovaClipboard) {
 	$scope.isLogged = false;
-	$scope.username = ionicAuth.getUserName();
+	var uuid = '';
 	$scope.$on("$ionicView.enter", function() {
+		$scope.username = ionicAuth.getUserName();
 		$scope.isLogged = ionicAuth.isAuthenticated();
 
 		$scope.$digest();
 	});
+
+	document.addEventListener("deviceready", function() {
+		uuid = $cordovaDevice.getUUID();
+	}, false);
+
+	$scope.obtenerUuid = function() {
+		$ionicPopup.alert({
+			title: "Información",
+			okText: 'Copiar',
+			content: uuid
+		}).then(function() {
+			$cordovaClipboard.copy(uuid);
+		});
+	};
 
 	$scope.cerrarSession = function() {
 		ionicAuth.logout();
@@ -145,6 +167,11 @@ angular.module('app.controllers', [])
 		};
 	};
 
+	var perfijo = '';
+
+	document.addEventListener("deviceready", function() {
+		perfijo = $cordovaDevice.getUUID();
+	}, false);
 
 	$scope.continuar = function() {
 		var parames = {
@@ -154,7 +181,7 @@ angular.module('app.controllers', [])
 			IdEstadoObservacion: 'OBSEPEN',
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
 			IdObservRemoto: 'DOBSACTIVO',
-			PrefijoRemoto: $cordovaDevice.getModel() + ' - ' + $cordovaDevice.getPlatform() + ' - ' + $cordovaDevice.getVersion(),
+			PrefijoRemoto: perfijo,
 			//PrefijoRemoto: '',
 			NombreUsuario: '',
 			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
@@ -189,7 +216,7 @@ angular.module('app.controllers', [])
 				});
 			});
 
-		})
+		});
 	};
 
 	$scope.$on("$ionicView.enter", function() {
@@ -262,7 +289,6 @@ angular.module('app.controllers', [])
 			}
 		}
 
-		$scope.indiceEstandar++;
 		if ($scope.textoBoton == 'Guardar') {
 
 			updateDet(function() {
@@ -271,6 +297,7 @@ angular.module('app.controllers', [])
 			});
 
 		} else {
+			$scope.indiceEstandar++;
 			updateDet(function() {
 				if (indice == forms.length - 1) {
 					$scope.disabledContinuar = true;
@@ -286,8 +313,6 @@ angular.module('app.controllers', [])
 				}
 			});
 		}
-
-
 	};
 
 	$scope.atras = function() {
@@ -310,13 +335,13 @@ angular.module('app.controllers', [])
 		$scope.textoBoton = 'Continuar';
 		$scope.indiceEstandar--;
 		updateDet(function() {
-			if (indice == 0) {
+			if (indice === 0) {
 				$scope.disabledAtras = true;
 				$scope.disabledContinuar = false;
 			} else {
 				indice--;
 				$scope.disabledContinuar = false;
-				if (indice == 0) {
+				if (indice === 0) {
 					$scope.disabledAtras = true;
 					$scope.disabledContinuar = false;
 				}
@@ -332,10 +357,13 @@ angular.module('app.controllers', [])
 	}
 
 	function validar_para_acciones() {
+
+		if (!angular.isDefined($scope.data.ncp) && !angular.isDefined($scope.data.nco)) {
+			return false;
+		}
+
 		//las acciones solo son obligatorias si las positivas son diferentes a las observadas.
-		console.log($scope.data.ncp, $scope.data.nco);
-		if (($scope.data.ncp == 0 || $scope.data.ncp == null) && $scope.data.nco > 0) {
-			console.log('barro');
+		if ($scope.data.ncp === 0 && $scope.data.nco > 0) {
 			return false;
 		} else {
 			return ($scope.data.ncp != $scope.data.nco ? true : false);
@@ -399,7 +427,6 @@ angular.module('app.controllers', [])
 					IdEstandar: data[i].IdEstandar
 				});
 			}
-			console.log(forms);
 			loadForm();
 			loadEstandar();
 		});
@@ -467,7 +494,7 @@ angular.module('app.controllers', [])
 		$timeout(function() {
 			$ionicNavBarDelegate.align('center');
 		}, 100);
-	})
+	});
 })
 
 .controller('ObsPorEnviarCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones,
@@ -509,7 +536,7 @@ angular.module('app.controllers', [])
 				var item = null;
 				var enviarLista = [];
 				var user = $localstorage.getObject('UserPg');
-				if (user == false) {
+				if (user === false) {
 					$ionicPopup.alert({
 						title: "Información",
 						content: 'Debe iniciar sesión para poder enviar las observaciones'
@@ -538,23 +565,17 @@ angular.module('app.controllers', [])
 										DetObservaciones.deleteAllById(item.IdObservacion);
 										$scope.refresh();
 									}
+								}, function(resp) {
+									$rootScope.$broadcast('loading:hide');
+									$ionicPopup.alert({
+										title: "Información",
+										content: resp.Message
+									});
 								});
 							});
 						});
 					});
 				}
-				/*console.log(enviarLista);
-				ObservacionesService.save(enviarLista, function(res) {
-					$rootScope.$broadcast('loading:hide');
-					if (res.IdObservacion) {
-						Observaciones.deleteById(item.IdObservacion);
-						DetObservaciones.deleteAllById(item.IdObservacion);
-						$scope.refresh();
-					}
-				}, function(argument) {
-					$rootScope.$broadcast('loading:hide');
-				});*/
-
 			}
 		});
 	};
@@ -705,7 +726,7 @@ angular.module('app.controllers', [])
 				// listen for Online event
 				$rootScope.$on('$cordovaNetwork:online', function(event, networkState) {
 					$scope.enableSync = false;
-				})
+				});
 			}
 		}
 	}

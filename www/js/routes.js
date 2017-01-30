@@ -1,6 +1,12 @@
 angular.module('app.routes', [])
 
-.config(function($stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, ionicDatePickerProvider) {
+.config(function($ionicCloudProvider, $stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, ionicDatePickerProvider) {
+
+	$ionicCloudProvider.init({
+		"core": {
+			"app_id": "c764ca5d"
+		}
+	});
 
 	$ionicConfigProvider.navBar.alignTitle('center');
 
@@ -82,8 +88,8 @@ angular.module('app.routes', [])
 		url: '/login',
 		templateUrl: 'templates/login.html',
 		controller: 'LoginCtrl'
-	})
+	});
 
-	$urlRouterProvider.otherwise('/side-content/crearobservacion')
+	$urlRouterProvider.otherwise('/side-content/crearobservacion');
 
 });

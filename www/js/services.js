@@ -135,7 +135,7 @@ angular.module('app.services', [])
 		getAllDetPorEnviar: getAllDetPorEnviar,
 		get: get,
 		deleteById: deleteById
-	}
+	};
 })
 
 .factory('Lideres', function($q, DBA) {
@@ -215,7 +215,7 @@ angular.module('app.services', [])
 	function updateDetalle(NCP, NCO, Acciones, AIdDetObservacion) {
 		var parameters = [NCP, NCO, Acciones],
 			IdEstadoDetObservacion = 'DOBSPEN';
-		if (NCO >= 0) {
+		if (NCO !== null && NCO >= 0) {
 			IdEstadoDetObservacion = 'DOBSACTIVO';
 			parameters.push(IdEstadoDetObservacion);
 		} else {
@@ -236,7 +236,7 @@ angular.module('app.services', [])
 		getByIdObservacion: getByIdObservacion,
 		updateDetalle: updateDetalle,
 		deleteAllById: deleteAllById
-	}
+	};
 })
 
 .factory('Estandares', function($q, DBA) {
@@ -270,7 +270,7 @@ angular.module('app.services', [])
 		get: get,
 		truncate: truncate,
 		add: add
-	}
+	};
 })
 
 .factory('Parametros', function($q, DBA) {
@@ -295,7 +295,7 @@ angular.module('app.services', [])
 		getAll: getAll,
 		add: add,
 		truncate: truncate
-	}
+	};
 })
 
 .factory('ValorParametros', function($q, DBA) {
@@ -320,7 +320,7 @@ angular.module('app.services', [])
 		getAll: getAll,
 		add: add,
 		truncate: truncate
-	}
+	};
 })
 
 .factory('$localstorage', ['$window', function($window) {
@@ -335,7 +335,7 @@ angular.module('app.services', [])
 			$window.localStorage[key] = JSON.stringify(value);
 		},
 		getObject: function(key) {
-			if ($window.localStorage[key] != undefined)
+			if ($window.localStorage[key] !== undefined)
 				return JSON.parse($window.localStorage[key] || false);
 
 			return false;
@@ -346,18 +346,19 @@ angular.module('app.services', [])
 		clear: function() {
 			$window.localStorage.clear();
 		}
-	}
+	};
 }])
 
 .factory('ionicAuth', ['$q', '$http', 'BASE_URL', '$localstorage', function($q, $http, BASE_URL, $localstorage) {
 	return {
 		isLogged: false,
-		login: function(username, password, recordar) {
+		login: function(username, password, recordar, uuid) {
 			var deferred = $q.defer();
 			var me = this;
-			$http.post(localStorage.getItem('configuraciones') + '/api/Login', {
+			$http.post(BASE_URL.url + '/api/Login', {
 				Name: username,
-				Password: password
+				Password: password,
+				uuid: uuid
 			}).success(function(data) {
 				data.username = username;
 				$localstorage.setObject('UserPg', data);
@@ -410,7 +411,7 @@ angular.module('app.services', [])
 })
 
 .factory('DetObservacionesService', function($resource, BASE_URL) {
-	return $resource(BASE_URL + '/api/DetObservaciones/:id', {
+	return $resource(BASE_URL.url + '/api/DetObservaciones/:id', {
 		id: "@id"
 	});
 })
