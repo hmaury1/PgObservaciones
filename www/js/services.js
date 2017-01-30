@@ -358,12 +358,16 @@ angular.module('app.services', [])
 			$http.post(BASE_URL.url + '/api/Login', {
 				Name: username,
 				Password: password,
-				uuid: uuid
+				uuid: "d52993b4d16ae240"
 			}).success(function(data) {
-				data.username = username;
-				$localstorage.setObject('UserPg', data);
+				if (data.success) {
+					data.username = username;
+					$localstorage.setObject('UserPg', data);
+					me.isLogged = true;
+				} else {
+					me.isLogged = false;
+				}
 
-				me.isLogged = true;
 				deferred.resolve(data);
 			}).error(deferred.reject);
 

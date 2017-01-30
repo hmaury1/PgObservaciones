@@ -37,7 +37,7 @@ angular.module('app.controllers', [])
 									IdUsuario: result33[i].IdUsuario,
 									Nombre: result33[i].Nombre,
 									IdEstadoLider: result33[i].IdEstadoLider,
-									Usuario: result33[i].Usuario,
+									Usuario: result33[i].Usuario
 								});
 							}
 							Lideres.getUser(data.id).then(function(result2) {
@@ -69,7 +69,7 @@ angular.module('app.controllers', [])
 			}
 		}, function(error) {
 			$rootScope.$broadcast('loading:hide');
-			$scope.error = error.message;
+			$scope.error = error.message || error.Message;
 		});
 	};
 })
@@ -77,6 +77,7 @@ angular.module('app.controllers', [])
 .controller('MenuCtrl', function($scope, ionicAuth, $ionicSideMenuDelegate, $state, $cordovaDevice, $ionicPopup, $cordovaClipboard) {
 	$scope.isLogged = false;
 	var uuid = '';
+	$scope.username = '';
 	$scope.$on("$ionicView.enter", function() {
 		$scope.username = ionicAuth.getUserName();
 		$scope.isLogged = ionicAuth.isAuthenticated();
@@ -167,10 +168,11 @@ angular.module('app.controllers', [])
 		};
 	};
 
+
 	var perfijo = '';
 
 	document.addEventListener("deviceready", function() {
-		perfijo = $cordovaDevice.getUUID();
+		prefijo = device.serial;
 	}, false);
 
 	$scope.continuar = function() {
@@ -558,7 +560,7 @@ angular.module('app.controllers', [])
 							DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
 								entry.DetObservaciones = alldet;
 								enviarLista.push(entry);
-								ObservacionesService.save(entry, function(res) {
+								ObservacionesService.save([entry], function(res) {
 									$rootScope.$broadcast('loading:hide');
 									if (res.IdObservacion) {
 										Observaciones.deleteById(item.IdObservacion);

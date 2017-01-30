@@ -2,12 +2,6 @@ angular.module('app.routes', [])
 
 .config(function($ionicCloudProvider, $stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, ionicDatePickerProvider) {
 
-	$ionicCloudProvider.init({
-		"core": {
-			"app_id": "c764ca5d"
-		}
-	});
-
 	$ionicConfigProvider.navBar.alignTitle('center');
 
 	var datePickerObj = {

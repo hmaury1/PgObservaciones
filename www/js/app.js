@@ -66,11 +66,13 @@ angular.module('app', ['ionic', 'ionic.cloud', 'ngCordova', 'ngResource', 'ionic
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS Parametros(IdParametro integer primary key,CodParametro text,Atributo text,Descripcion text,EstadoParametro text)");
 		$cordovaSQLite.execute(db, "CREATE TABLE IF NOT EXISTS ValorParametros(IdValorParametro integer primary key,IdParametro integer,CodValorParametro text,CodParametro text,Valor text,Orden text,EstadoValorParametro text,FOREIGN KEY(IdParametro) REFERENCES Parametros(IdParametro))");
 
+
 		if (localStorage.getItem('configuraciones') === undefined || localStorage.getItem('configuraciones') === null) {
 			localStorage.setItem('configuraciones', BASE_URL.url);
 		}
-		console.log(localStorage.getItem('configuraciones'));
+
 		BASE_URL.url = localStorage.getItem('configuraciones') || 'http://181.49.194.242:8020/PgObservacionesApi';
+
 
 	});
 });
