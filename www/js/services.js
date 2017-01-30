@@ -358,7 +358,7 @@ angular.module('app.services', [])
 			$http.post(BASE_URL.url + '/api/Login', {
 				Name: username,
 				Password: password,
-				uuid: "d52993b4d16ae240"
+				uuid: uuid
 			}).success(function(data) {
 				if (data.success) {
 					data.username = username;
