@@ -86,7 +86,27 @@ angular.module('app.services', [])
 .factory('Observaciones', function($q, DBA) {
 
 	function getAll() {
-		return DBA.query("SELECT IdObservacion,IdLider, Fecha, Lugar, IdEstadoObservacion, IdEmpresa, IdObservRemoto, PrefijoRemoto, NombreUsuario, IdEmpresaContratante FROM Observaciones")
+		return DBA.query("SELECT obs.IdObservacion," +
+				"obs.IdLider," +
+				"obs.Fecha," +
+				"obs.Lugar," +
+				"obs.IdEstadoObservacion," +
+				"obs.IdEmpresa," +
+				"obs.IdObservRemoto," +
+				"obs.PrefijoRemoto," +
+				"obs.NombreUsuario," +
+				"obs.IdEmpresaContratante," +
+				"det.IdDetObservacion," +
+				"det.IdEstandar," +
+				"det.NumCompPositivos," +
+				"det.NumCompObservados," +
+				"det.Acciones," +
+				"det.IdEstadoDetObservacion," +
+				"det.IdDetObservRemoto," +
+				"det.PrefijoRemoto " +
+				"FROM Observaciones obs " +
+				"INNER JOIN DetObservaciones det ON det.IdObservacion = obs.IdObservacion " +
+				"WHERE obs.IdEstadoObservacion = 'OBSEACTIVO'")
 			.then(function(result) {
 				return DBA.getAll(result);
 			});
@@ -125,7 +145,6 @@ angular.module('app.services', [])
 	function deleteById(key) {
 		return DBA.query("DELETE FROM Observaciones WHERE IdObservacion = (?)", [key]);
 	}
-
 
 	return {
 		getAll: getAll,

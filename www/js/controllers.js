@@ -562,7 +562,7 @@ angular.module('app.controllers', [])
 								enviarLista.push(entry);
 								ObservacionesService.save([entry], function(res) {
 									$rootScope.$broadcast('loading:hide');
-									if (res.IdObservacion) {
+									if (res.success) {
 										Observaciones.deleteById(item.IdObservacion);
 										DetObservaciones.deleteAllById(item.IdObservacion);
 										$scope.refresh();
