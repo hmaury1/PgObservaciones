@@ -85,9 +85,9 @@ angular.module('app.services', [])
 
 .factory('Observaciones', function($q, DBA) {
 
-	function getAll() {
+	function getAll(key) {
 		return DBA.query("SELECT obs.IdObservacion," +
-				"obs.IdLider," +
+				"li.IdLider," +
 				"obs.Fecha," +
 				"obs.Lugar," +
 				"obs.IdEstadoObservacion," +
@@ -106,7 +106,8 @@ angular.module('app.services', [])
 				"det.PrefijoRemoto " +
 				"FROM Observaciones obs " +
 				"INNER JOIN DetObservaciones det ON det.IdObservacion = obs.IdObservacion " +
-				"WHERE obs.IdEstadoObservacion = 'OBSEACTIVO'")
+				"INNER JOIN Lideres li ON li.IdLider = (?)" +
+				"WHERE obs.IdEstadoObservacion = 'OBSEACTIVO'", [key])
 			.then(function(result) {
 				return DBA.getAll(result);
 			});

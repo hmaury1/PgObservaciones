@@ -529,6 +529,16 @@ angular.module('app.controllers', [])
 		});
 	};
 
+	function cleanArray(actual) {
+		var newArray = [];
+		for (var i = 0; i < actual.length; i++) {
+			if (actual[i]) {
+				newArray.push(actual[i]);
+			}
+		}
+		return newArray;
+	}
+
 	$scope.save = function() {
 		$ionicPopup.confirm({
 			title: 'Información',
@@ -547,37 +557,58 @@ angular.module('app.controllers', [])
 					});
 					return;
 				}
-				for (var i = 0; i < $scope.items.length; i++) {
-					item = $scope.items[i];
-					Observaciones.get(item.IdObservacion).then(function(obs) {
-						$rootScope.$broadcast('loading:show');
-						Lideres.getUser(user.id).then(function(data) {
-							obs.IdLider = data.IdLider;
-							obs.NombreUsuario = user.username;
-							obs.movil = 1;
-							var entry = new ObservacionesService(); //You can instantiate resource class
-							entry = obs;
-							DetObservaciones.getByIdObservacion(item.IdObservacion).then(function(alldet) {
-								entry.DetObservaciones = alldet;
-								enviarLista.push(entry);
-								ObservacionesService.save([entry], function(res) {
-									$rootScope.$broadcast('loading:hide');
-									if (res.success) {
-										Observaciones.deleteById(item.IdObservacion);
-										DetObservaciones.deleteAllById(item.IdObservacion);
-										$scope.refresh();
-									}
-								}, function(resp) {
-									$rootScope.$broadcast('loading:hide');
-									$ionicPopup.alert({
-										title: "Información",
-										content: resp.Message
-									});
-								});
-							});
+				$rootScope.$broadcast('loading:show');
+				Observaciones.getAll(user.id).then(function(data) {
+					for (var i = 0; i < data.length; i++) {
+						item = data[i];
+						if (enviarLista[item.IdObservacion] === undefined || enviarLista[item.IdObservacion] === null) {
+							enviarLista[item.IdObservacion] = {
+								IdObservacion: item.IdObservacion,
+								IdLider: item.IdLider,
+								Fecha: item.Fecha,
+								Lugar: item.Lugar,
+								IdEstadoObservacion: item.IdEstadoObservacion,
+								IdEmpresa: item.IdEmpresa,
+								IdObservRemoto: item.IdObservRemoto,
+								PrefijoRemoto: item.PrefijoRemoto,
+								NombreUsuario: user.username,
+								IdEmpresaContratante: item.IdEmpresaContratante,
+								movil: 1
+							};
+						}
+
+						if (enviarLista[item.IdObservacion].DetObservaciones === undefined)
+							enviarLista[item.IdObservacion].DetObservaciones = [];
+
+						enviarLista[item.IdObservacion].DetObservaciones.push({
+							IdDetObservacion: item.IdDetObservacion,
+							IdEstandar: item.IdEstandar,
+							NumCompPositivos: item.NumCompPositivos,
+							NumCompObservados: item.NumCompObservados,
+							Acciones: item.Acciones,
+							IdEstadoDetObservacion: item.IdEstadoDetObservacion,
+							IdDetObservRemoto: item.IdDetObservRemoto,
+							PrefijoRemoto: item.PrefijoRemoto
+						});
+					}
+
+					ObservacionesService.save(cleanArray(enviarLista), function(res) {
+						$rootScope.$broadcast('loading:hide');
+						if (res.success) {
+							for (var j = 0; j < $scope.items.length; j++) {
+								Observaciones.deleteById($scope.items[j].IdObservacion);
+								DetObservaciones.deleteAllById($scope.items[j].IdObservacion);
+							}
+							$scope.refresh();
+						}
+					}, function(resp) {
+						$rootScope.$broadcast('loading:hide');
+						$ionicPopup.alert({
+							title: "Información",
+							content: resp.Message || resp.message
 						});
 					});
-				}
+				});
 			}
 		});
 	};
