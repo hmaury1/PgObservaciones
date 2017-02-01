@@ -1,7 +1,7 @@
 <ion-view view-title="Detalle Observación">
     <ion-content has-header="true" padding="true">
         <p>
-            <h3>Estandar #{{ indiceEstandar }}</h3>
+            <h3>Estandar #{{ indiceEstandar }} <a ui-sref="menu.editarobservacion({ id_observacion : idObs.id_observacion })">Ver Observación</a> </h3>
 			{{descripcion}}
         </p>
         <form name="formGuardar">
@@ -15,7 +15,7 @@
                     <input type="number" ng-model="data.ncp">
                 </label>
                 <label class="item item-input">
-                    <span class="input-label">Acciones</span>
+                    <span class="input-label">Retroalimentación</span>
                     <textarea rows="5" ng-model="data.acciones"></textarea>
                 </label>
             </div>

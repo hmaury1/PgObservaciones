@@ -112,8 +112,6 @@ angular.module('app.controllers', [])
 	Observaciones, Estandares, DetObservaciones, $cordovaDevice, $timeout, $ionicNavBarDelegate) {
 
 	$scope.data = {
-		empresaselected: null,
-		empresascontraselected: null,
 		empresa: {
 			IdEmpresa: -1
 		},
@@ -155,8 +153,6 @@ angular.module('app.controllers', [])
 
 	$scope.limpiarForm = function() {
 		$scope.data = {
-			empresaselected: null,
-			empresascontraselected: null,
 			empresa: {
 				IdEmpresa: $scope.empresas[0].IdEmpresa
 			},
@@ -190,8 +186,6 @@ angular.module('app.controllers', [])
 		};
 		Observaciones.add(parames).then(function(result) {
 			$scope.data = {
-				empresaselected: null,
-				empresascontraselected: null,
 				empresa: {
 					IdEmpresa: -1
 				},
@@ -239,7 +233,9 @@ angular.module('app.controllers', [])
 	 * id de la observacion
 	 * @type {Number}
 	 */
-	var id_observacion = $stateParams.id_observacion;
+	$scope.idObs = {
+		id_observacion: $stateParams.id_observacion
+	};
 	/**
 	 * Variable con que se lleva en conteo de cual formulario se muestra
 	 * @type {Number}
@@ -419,7 +415,7 @@ angular.module('app.controllers', [])
 	function init() {
 		indice = 0;
 		$scope.data.indiceEstandar = 1;
-		DetObservaciones.getByIdObservacion(id_observacion).then(function(data) {
+		DetObservaciones.getByIdObservacion($scope.idObs.id_observacion).then(function(data) {
 			for (var i = 0; i < data.length; i++) {
 				forms.push({
 					acciones: data[i].Acciones,
@@ -790,6 +786,97 @@ angular.module('app.controllers', [])
 	});
 
 	init();
+
+	$scope.$on('$ionicView.afterEnter', function(event, viewData) {
+		$timeout(function() {
+			$ionicNavBarDelegate.align('center');
+		}, 100);
+	});
+
+})
+
+.controller('EditarObservacionCtrl', function($scope, $stateParams, $filter, ionicDatePicker, Empresas,
+	Observaciones, $timeout, $ionicNavBarDelegate, $ionicPopup) {
+
+	$scope.data = {
+		empresa: {
+			IdEmpresa: -1
+		},
+		empresascontra: {
+			IdEmpresa: -1
+		},
+		fecha: '',
+		lugar: ''
+	};
+
+	$scope.empresas = [];
+	$scope.empresascontra = [];
+
+	$scope.openDatePicker = function() {
+		var ipObj1 = {
+			callback: function(val) { //Mandatory
+				var pick = new Date(val);
+				$scope.data.fecha = $filter('date')(pick, 'yyyy-MM-dd');
+			}
+		};
+		ionicDatePicker.openDatePicker(ipObj1);
+	};
+
+	function init() {
+		Observaciones.get($stateParams.id_observacion).then(function(obs) {
+			console.log(obs);
+			$scope.data.fecha = obs.Fecha;
+			$scope.data.lugar = obs.Lugar;
+			Empresas.getAll().then(function(data) {
+				$scope.empresas = data;
+				if (data.length > 0) {
+					$scope.data.empresa.IdEmpresa = obs.IdEmpresa;
+				}
+			});
+
+			Empresas.getAll().then(function(data) {
+				$scope.empresascontra = data;
+				if (data.length > 0) {
+					$scope.data.empresascontra.IdEmpresa = obs.IdEmpresaContratante;
+				}
+			});
+
+		});
+	}
+
+	$scope.limpiarForm = function() {
+		$scope.data = {
+			empresa: {
+				IdEmpresa: $scope.empresas[0].IdEmpresa
+			},
+			empresascontra: {
+				IdEmpresa: $scope.empresas[0].IdEmpresa
+			},
+			fecha: '',
+			lugar: ''
+		};
+	};
+
+	$scope.continuar = function() {
+		var parames = {
+			IdObservacion: $stateParams.id_observacion,
+			Fecha: $scope.data.fecha,
+			Lugar: $scope.data.lugar,
+			IdEmpresa: $scope.data.empresa.IdEmpresa,
+			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
+		};
+
+		Observaciones.update(parames).then(function() {
+			$ionicPopup.alert({
+				title: "Actualización",
+				content: "Observación Actualizada"
+			});
+		});
+	};
+
+	$scope.$on("$ionicView.enter", function() {
+		init();
+	});
 
 	$scope.$on('$ionicView.afterEnter', function(event, viewData) {
 		$timeout(function() {

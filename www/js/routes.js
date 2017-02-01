@@ -78,6 +78,16 @@ angular.module('app.routes', [])
 		}
 	})
 
+	.state('menu.editarobservacion', {
+		url: '/editarobservacion/{id_observacion}',
+		views: {
+			'side-content': {
+				templateUrl: 'templates/crear-observacion.html',
+				controller: 'EditarObservacionCtrl'
+			}
+		}
+	})
+
 	.state('login', {
 		url: '/login',
 		templateUrl: 'templates/login.html',

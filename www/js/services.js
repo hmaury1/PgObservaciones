@@ -147,6 +147,11 @@ angular.module('app.services', [])
 		return DBA.query("DELETE FROM Observaciones WHERE IdObservacion = (?)", [key]);
 	}
 
+	function update(data) {
+		var parameters = [data.IdEmpresa, data.IdEmpresaContratante, data.Fecha, data.Lugar, data.IdObservacion];
+		return DBA.query("UPDATE Observaciones SET IdEmpresa = (?),IdEmpresaContratante = (?), Fecha = (?), Lugar = (?)  WHERE IdObservacion = (?)", parameters);
+	}
+
 	return {
 		getAll: getAll,
 		add: add,
@@ -154,7 +159,8 @@ angular.module('app.services', [])
 		getAllDetPent: getAllDetPent,
 		getAllDetPorEnviar: getAllDetPorEnviar,
 		get: get,
-		deleteById: deleteById
+		deleteById: deleteById,
+		update: update
 	};
 })
 
