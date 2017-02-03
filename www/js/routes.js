@@ -1,6 +1,6 @@
 angular.module('app.routes', [])
 
-.config(function($ionicCloudProvider, $stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, ionicDatePickerProvider) {
+.config(function($stateProvider, $httpProvider, $urlRouterProvider, $ionicConfigProvider, ionicDatePickerProvider) {
 
 	$ionicConfigProvider.navBar.alignTitle('center');
 

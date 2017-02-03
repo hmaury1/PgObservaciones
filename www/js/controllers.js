@@ -78,12 +78,7 @@ angular.module('app.controllers', [])
 	$scope.isLogged = false;
 	var uuid = '';
 	$scope.username = '';
-	$scope.$on("$ionicView.enter", function() {
-		$scope.username = ionicAuth.getUserName();
-		$scope.isLogged = ionicAuth.isAuthenticated();
 
-		$scope.$digest();
-	});
 
 	document.addEventListener("deviceready", function() {
 		uuid = $cordovaDevice.getUUID();
@@ -106,6 +101,13 @@ angular.module('app.controllers', [])
 		$ionicSideMenuDelegate.toggleLeft();
 		$state.go('menu.crearobservacion');
 	};
+
+	$scope.$on("$ionicView.enter", function() {
+		$scope.username = ionicAuth.getUserName();
+		$scope.isLogged = ionicAuth.isAuthenticated();
+
+		$scope.$digest();
+	});
 })
 
 .controller('CrearObservacionCtrl', function($scope, $filter, $state, ionicDatePicker, Empresas,
@@ -164,13 +166,6 @@ angular.module('app.controllers', [])
 		};
 	};
 
-
-	var perfijo = '';
-
-	document.addEventListener("deviceready", function() {
-		prefijo = device.serial;
-	}, false);
-
 	$scope.continuar = function() {
 		var parames = {
 			IdLider: 0,
@@ -179,8 +174,7 @@ angular.module('app.controllers', [])
 			IdEstadoObservacion: 'OBSEPEN',
 			IdEmpresa: $scope.data.empresa.IdEmpresa,
 			IdObservRemoto: 'DOBSACTIVO',
-			PrefijoRemoto: perfijo,
-			//PrefijoRemoto: '',
+			PrefijoRemoto: $cordovaDevice.getUUID(),
 			NombreUsuario: '',
 			IdEmpresaContratante: $scope.data.empresascontra.IdEmpresa
 		};
@@ -229,32 +223,15 @@ angular.module('app.controllers', [])
 
 .controller('DetalleObservacionCtrl', function($scope, $stateParams, $state, $ionicHistory, $ionicPopup, DetObservaciones,
 	Estandares, Observaciones, $timeout, $ionicNavBarDelegate) {
-	/**
-	 * id de la observacion
-	 * @type {Number}
-	 */
+
 	$scope.idObs = {
 		id_observacion: $stateParams.id_observacion
 	};
-	/**
-	 * Variable con que se lleva en conteo de cual formulario se muestra
-	 * @type {Number}
-	 */
+
 	var indice = 0;
-	/**
-	 * Mantengo el memoria la lista de detalle de observacion con sus campos a cambiar
-	 * @type {Array}
-	 */
 	var forms = [];
-	/**
-	 * Habilito el boton continuar
-	 * @type {Boolean}
-	 */
+
 	$scope.disabledContinuar = false;
-	/**
-	 * Habilito el boton atras
-	 * @type {Boolean}
-	 */
 	$scope.disabledAtras = true;
 	$scope.descripcion = '';
 	$scope.data = {
@@ -359,13 +336,13 @@ angular.module('app.controllers', [])
 		if (!angular.isDefined($scope.data.ncp) && !angular.isDefined($scope.data.nco)) {
 			return false;
 		}
-
+		return ($scope.data.ncp != $scope.data.nco ? true : false);
 		//las acciones solo son obligatorias si las positivas son diferentes a las observadas.
-		if ($scope.data.ncp === 0 && $scope.data.nco > 0) {
+		/*if ($scope.data.ncp === 0 && $scope.data.nco > 0) {
 			return false;
 		} else {
 			return ($scope.data.ncp != $scope.data.nco ? true : false);
-		}
+		}*/
 	}
 
 	function validar_text_10() {
@@ -414,7 +391,8 @@ angular.module('app.controllers', [])
 
 	function init() {
 		indice = 0;
-		$scope.data.indiceEstandar = 1;
+		$scope.indiceEstandar = 1;
+		forms = [];
 		DetObservaciones.getByIdObservacion($scope.idObs.id_observacion).then(function(data) {
 			for (var i = 0; i < data.length; i++) {
 				forms.push({
@@ -444,7 +422,6 @@ angular.module('app.controllers', [])
 
 .controller('ObsPendientesCtrl', function($rootScope, $scope, $state, Observaciones, Estandares, DetObservaciones, $timeout, $ionicNavBarDelegate, $ionicPopup) {
 
-	var count = 0;
 	$scope.items = [];
 
 	$scope.refresh = function() {
@@ -584,7 +561,7 @@ angular.module('app.controllers', [])
 							Acciones: item.Acciones,
 							IdEstadoDetObservacion: item.IdEstadoDetObservacion,
 							IdDetObservRemoto: item.IdDetObservRemoto,
-							PrefijoRemoto: item.PrefijoRemoto
+							PrefijoRemoto: item.PrefijoRemoto2
 						});
 					}
 
@@ -824,7 +801,6 @@ angular.module('app.controllers', [])
 
 	function init() {
 		Observaciones.get($stateParams.id_observacion).then(function(obs) {
-			console.log(obs);
 			$scope.data.fecha = obs.Fecha;
 			$scope.data.lugar = obs.Lugar;
 			Empresas.getAll().then(function(data) {

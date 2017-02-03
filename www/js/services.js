@@ -103,7 +103,7 @@ angular.module('app.services', [])
 				"det.Acciones," +
 				"det.IdEstadoDetObservacion," +
 				"det.IdDetObservRemoto," +
-				"det.PrefijoRemoto " +
+				"det.PrefijoRemoto as PrefijoRemoto2 " +
 				"FROM Observaciones obs " +
 				"INNER JOIN DetObservaciones det ON det.IdObservacion = obs.IdObservacion " +
 				"INNER JOIN Lideres li ON li.IdLider = (?)" +
@@ -132,13 +132,21 @@ angular.module('app.services', [])
 	}
 
 	function getAllDetPent() {
-		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 'DOBSPEN' GROUP BY obs.IdObservacion").then(function(result) {
+		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,emp1.RazonSocial as Empresa,emp2.RazonSocial as EmpresaContratante,count(obs.IdObservacion) as registros " +
+			"from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion " +
+			"INNER JOIN Empresas emp1 ON emp1.IdEmpresa = obs.IdEmpresa " +
+			"INNER JOIN Empresas emp2 ON emp2.IdEmpresa = obs.IdEmpresaContratante " +
+			"WHERE det.IdEstadoDetObservacion = 'DOBSPEN' GROUP BY obs.IdObservacion").then(function(result) {
 			return DBA.getAll(result);
 		});
 	}
 
 	function getAllDetPorEnviar() {
-		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,count(obs.IdObservacion) as registros from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion where det.IdEstadoDetObservacion = 'DOBSACTIVO' GROUP BY obs.IdObservacion").then(function(result) {
+		return DBA.query("select obs.IdObservacion,obs.Lugar,obs.Fecha,emp1.RazonSocial as Empresa,emp2.RazonSocial as EmpresaContratante,count(obs.IdObservacion) as registros " +
+			"from Observaciones obs inner join DetObservaciones det ON det.IdObservacion = obs.IdObservacion " +
+			"INNER JOIN Empresas emp1 ON emp1.IdEmpresa = obs.IdEmpresa " +
+			"INNER JOIN Empresas emp2 ON emp2.IdEmpresa = obs.IdEmpresaContratante " +
+			"WHERE det.IdEstadoDetObservacion = 'DOBSACTIVO' GROUP BY obs.IdObservacion").then(function(result) {
 			return DBA.getAll(result);
 		});
 	}

@@ -5,8 +5,12 @@
   	<ion-content has-header="true" padding="true">
 	<ion-list>
         <ion-item ng-repeat="item in items" class="item-thumbnail-right" ng-click="openDets(item)">
-		    <h2><b>{{item.Lugar}}</b></h2>
-		    <h2>{{item.Fecha}}</h2>
+		    <h2><b>Empresa</b></h2>
+		    <h2>{{item.Empresa}}</h2>
+		    <h2><b>Empresa Contratante</b></h2>
+		    <h2>{{item.EmpresaContratante}}</h2>
+		    <h2><b>Lugar -</b> {{item.Lugar}}</h2>
+		    <h2><b>Fecha -</b> {{item.Fecha}}</h2>
 		    <div class="item-icon-right">
 		        <i class="icon ion-ios-arrow-right"></i>
 		    </div>
