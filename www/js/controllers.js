@@ -138,14 +138,14 @@ angular.module('app.controllers', [])
 	};
 
 	function init() {
-		Empresas.getAll().then(function(data) {
+		Empresas.getAll('TIPEMPBASE').then(function(data) {
 			$scope.empresas = data;
 			if (data.length > 0) {
 				$scope.data.empresa.IdEmpresa = $scope.empresas[0].IdEmpresa;
 			}
 		});
 
-		Empresas.getAll().then(function(data) {
+		Empresas.getAll('TIPEMPCONT').then(function(data) {
 			$scope.empresascontra = data;
 			if (data.length > 0) {
 				$scope.data.empresascontra.IdEmpresa = $scope.empresascontra[0].IdEmpresa;
@@ -258,7 +258,7 @@ angular.module('app.controllers', [])
 			if (!validar_text_10()) {
 				$ionicPopup.alert({
 					title: "Información",
-					content: 'Las acciones deben tener mas de 10 caracteres'
+					content: 'Se requiere restroalimentación de 10 o mas caracteres'
 				});
 				return;
 			}

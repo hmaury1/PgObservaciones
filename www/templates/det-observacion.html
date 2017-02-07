@@ -1,32 +1,36 @@
 <ion-view view-title="Detalle Observación">
-    <ion-content has-header="true" padding="true">
+    <ion-content has-header="true" padding="true" class="form__border">
+        <div class="row">
+            <div class="col text-center">
+                <button class="button button-calm small_button" ng-disabled="disabledAtras" ng-click="atras()">Atras</button>
+            </div>
+            <div class="col text-center">
+                <button class="button button-positive small_button" ng-disabled="disabledContinuar" ng-click="continuar()">{{ textoBoton }}</button>
+            </div>
+        </div>
+        &nbsp;
+        <div class="row">
+            <div class="col">
+                <h3>Estandar #{{ indiceEstandar }}</h3>
+            </div>
+            <div class="col text-right">
+                <button class="button button-energized small_button-observacion" ui-sref="menu.editarobservacion({ id_observacion : idObs.id_observacion })">Ver Observación</button>
+            </div>
+        </div>
         <p>
-            <h3>Estandar #{{ indiceEstandar }} <a ui-sref="menu.editarobservacion({ id_observacion : idObs.id_observacion })">Ver Observación</a> </h3>
-			{{descripcion}}
+            {{descripcion}}
         </p>
         <form name="formGuardar">
-            <div class="list">
-                <label class="item item-input">
-                    <span class="input-label">Comportamientos Observados</span>
-                    <input type="number" ng-model="data.nco">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Comportamientos Positivos</span>
-                    <input type="number" ng-model="data.ncp">
-                </label>
-                <label class="item item-input">
-                    <span class="input-label">Retroalimentación</span>
-                    <textarea rows="5" ng-model="data.acciones"></textarea>
-                </label>
-            </div>
             <div class="row">
-                <div class="col">
-                    <button class="button button-block button-positive" ng-disabled="disabledAtras" ng-click="atras()">Atras</button>
-                </div>
-                <div class="col">
-                    <button class="button button-block button-positive" ng-disabled="disabledContinuar" ng-click="continuar()">{{ textoBoton }}</button>
+                <div class="col col-center col-30"> <b>Comportamientos</b></div>
+                <div class="col">  <b>Observados</b>
+                    <input class="input__derecha" type="number" ng-model="data.nco">
+                    <br /><br />
+                     <b>Positivos</b>  <input class="input__derecha" type="number" ng-model="data.ncp">
                 </div>
             </div>
+            <b>Retroalimentación :</b>
+            <textarea rows="5" style="width: 100%" ng-model="data.acciones"></textarea>
         </form>
     </ion-content>
 </ion-view>

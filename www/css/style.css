@@ -23,3 +23,15 @@ ion-list.manual-list-fullwidth div.list > .item, .list.card.manual-card-fullwidt
   transform: translate3d(0px, 0px, 0px) !important;
   text-align: center !important;
 }
+
+.small_button{
+    line-height: 10px !important;
+    min-height: 30px !important;
+    width: 100px !important;
+}
+
+.small_button-observacion{
+    line-height: 5px !important;
+    min-height: 24px !important;
+    font-size: 14px !important;
+}

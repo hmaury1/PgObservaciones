@@ -93,5 +93,25 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 		color: white;
 		margin: 0px;
 	}
+}
 
+.form__border {
+	.ng-pristine, .ng-valid, .ng-empty, .ng-touched,
+	.ng-dirty, .ng-valid-parse, .ng-invalid, .ng-invalid-required {
+		input[type=text],input[type="number"],textarea{
+			border: 1px solid #ddd;
+			padding-right: 5px;
+	    	margin-right: 10px;
+		}
+	}
+
+	.item {
+	    border: 0 !important;
+	}
+}
+
+.input__derecha {
+	float: right;
+    width: 60px;
+    padding: 3px !important;
 }

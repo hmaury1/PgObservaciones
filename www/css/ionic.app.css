@@ -9866,3 +9866,19 @@ a.button {
   .error-box p {
     color: white;
     margin: 0px; }
+
+.form__border .ng-pristine input[type=text], .form__border .ng-pristine input[type="number"], .form__border .ng-pristine textarea, .form__border .ng-valid input[type=text], .form__border .ng-valid input[type="number"], .form__border .ng-valid textarea, .form__border .ng-empty input[type=text], .form__border .ng-empty input[type="number"], .form__border .ng-empty textarea, .form__border .ng-touched input[type=text], .form__border .ng-touched input[type="number"], .form__border .ng-touched textarea,
+.form__border .ng-dirty input[type=text],
+.form__border .ng-dirty input[type="number"],
+.form__border .ng-dirty textarea, .form__border .ng-valid-parse input[type=text], .form__border .ng-valid-parse input[type="number"], .form__border .ng-valid-parse textarea, .form__border .ng-invalid input[type=text], .form__border .ng-invalid input[type="number"], .form__border .ng-invalid textarea, .form__border .ng-invalid-required input[type=text], .form__border .ng-invalid-required input[type="number"], .form__border .ng-invalid-required textarea {
+  border: 1px solid #ddd;
+  padding-right: 5px;
+  margin-right: 10px; }
+
+.form__border .item {
+  border: 0 !important; }
+
+.input__derecha {
+  float: right;
+  width: 60px;
+  padding: 3px !important; }

@@ -50,8 +50,8 @@ angular.module('app.services', [])
 
 .factory('Empresas', function($q, DBA) {
 
-	function getAll() {
-		return DBA.query("SELECT IdEmpresa,RazonSocial FROM Empresas")
+	function getAll(tipo) {
+		return DBA.query("SELECT IdEmpresa,RazonSocial FROM Empresas WHERE IdTipoEmpresa = (?)", [tipo])
 			.then(function(result) {
 				return DBA.getAll(result);
 			});
