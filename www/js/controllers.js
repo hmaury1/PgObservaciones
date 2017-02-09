@@ -803,14 +803,14 @@ angular.module('app.controllers', [])
 		Observaciones.get($stateParams.id_observacion).then(function(obs) {
 			$scope.data.fecha = obs.Fecha;
 			$scope.data.lugar = obs.Lugar;
-			Empresas.getAll().then(function(data) {
+			Empresas.getAll('TIPEMPBASE').then(function(data) {
 				$scope.empresas = data;
 				if (data.length > 0) {
 					$scope.data.empresa.IdEmpresa = obs.IdEmpresa;
 				}
 			});
 
-			Empresas.getAll().then(function(data) {
+			Empresas.getAll('TIPEMPCONT').then(function(data) {
 				$scope.empresascontra = data;
 				if (data.length > 0) {
 					$scope.data.empresascontra.IdEmpresa = obs.IdEmpresaContratante;
