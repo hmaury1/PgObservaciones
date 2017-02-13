@@ -57,6 +57,13 @@ angular.module('app.services', [])
 			});
 	}
 
+	function getAllF() {
+		return DBA.query("SELECT IdEmpresa,RazonSocial FROM Empresas")
+			.then(function(result) {
+				return DBA.getAll(result);
+			});
+	}
+
 	function get(key) {
 		var parameters = [key];
 		return DBA.query("SELECT IdEmpresa,RazonSocial FROM Empresas WHERE IdEmpresa = (?)", parameters)
@@ -76,6 +83,7 @@ angular.module('app.services', [])
 
 	return {
 		getAll: getAll,
+		getAllF: getAllF,
 		get: get,
 		add: add,
 		truncate: truncate

@@ -138,14 +138,14 @@ angular.module('app.controllers', [])
 	};
 
 	function init() {
-		Empresas.getAll('TIPEMPBASE').then(function(data) {
+		Empresas.getAllF().then(function(data) {
 			$scope.empresas = data;
 			if (data.length > 0) {
 				$scope.data.empresa.IdEmpresa = $scope.empresas[0].IdEmpresa;
 			}
 		});
 
-		Empresas.getAll('TIPEMPCONT').then(function(data) {
+		Empresas.getAll('TIPEMPBASE').then(function(data) {
 			$scope.empresascontra = data;
 			if (data.length > 0) {
 				$scope.data.empresascontra.IdEmpresa = $scope.empresascontra[0].IdEmpresa;
@@ -803,14 +803,14 @@ angular.module('app.controllers', [])
 		Observaciones.get($stateParams.id_observacion).then(function(obs) {
 			$scope.data.fecha = obs.Fecha;
 			$scope.data.lugar = obs.Lugar;
-			Empresas.getAll('TIPEMPBASE').then(function(data) {
+			Empresas.getAllF().then(function(data) {
 				$scope.empresas = data;
 				if (data.length > 0) {
 					$scope.data.empresa.IdEmpresa = obs.IdEmpresa;
 				}
 			});
 
-			Empresas.getAll('TIPEMPCONT').then(function(data) {
+			Empresas.getAll('TIPEMPBASE').then(function(data) {
 				$scope.empresascontra = data;
 				if (data.length > 0) {
 					$scope.data.empresascontra.IdEmpresa = obs.IdEmpresaContratante;
