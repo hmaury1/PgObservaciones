@@ -397,8 +397,8 @@ angular.module('app.controllers', [])
 			for (var i = 0; i < data.length; i++) {
 				forms.push({
 					acciones: data[i].Acciones,
-					nco: data[i].NumCompObservados,
-					ncp: data[i].NumCompPositivos,
+					nco: data[i].NumCompObservados || 0,
+					ncp: data[i].NumCompPositivos || 0,
 					IdDetObservacion: data[i].IdDetObservacion,
 					IdEstandar: data[i].IdEstandar
 				});

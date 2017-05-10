@@ -1,4 +1,5 @@
 {
-	"name": "PgObservaciones",
-	"app_id": "486b5bb6"
+  "name": "PgObservaciones",
+  "app_id": "486b5bb6",
+  "type": "ionic1"
 }
