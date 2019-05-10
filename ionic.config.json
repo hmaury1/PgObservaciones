@@ -1,5 +1,14 @@
 {
   "name": "PgObservaciones",
-  "app_id": "486b5bb6",
-  "type": "ionic1"
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic1",
+  "id": "486b5bb6",
+  "watchPatterns": [
+    "scss/**/*",
+    "www/**/*",
+    "!www/lib/**/*",
+    "!www/**/*.map"
+  ]
 }

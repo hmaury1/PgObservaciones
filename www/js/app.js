@@ -14,7 +14,7 @@ var db = null;
 angular.module('app', ['ionic', 'ngCordova', 'ngResource', 'ionic-datepicker', 'ion-fab-button', 'app.controllers', 'app.routes', 'app.directives', 'app.services'])
 
 .value('BASE_URL', {
-	url: 'http://181.49.194.242:8020/PgObservacionesApi'
+	url: 'http://pgcobaqint03v/SMPlusApis/PgObservacionesApi'
 })
 
 .run(function($rootScope, $ionicPlatform, $ionicLoading, $ionicPopup, $cordovaSQLite, BASE_URL) {
@@ -71,7 +71,7 @@ angular.module('app', ['ionic', 'ngCordova', 'ngResource', 'ionic-datepicker', '
 			localStorage.setItem('configuraciones', BASE_URL.url);
 		}
 
-		BASE_URL.url = localStorage.getItem('configuraciones') || 'http://181.49.194.242:8020/PgObservacionesApi';
+		BASE_URL.url = localStorage.getItem('configuraciones') || 'http://pgcobaqint03v/SMPlusApis/PgObservacionesApi';
 
 
 	});
